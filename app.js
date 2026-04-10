@@ -1,3 +1,5 @@
+document.addEventListener(“DOMContentLoaded”, function() {
+
 var SPLIT = [
 {day:“Monday”,    type:“push”,  label:“PUSH”,         sub:“Chest / Shoulders / Triceps”, ex:[“Seated DB Lateral Raise”,“Incline Barbell Press”,“Seated DB Shoulder Press”,“Seated Chest Machine Press”,“High to Low Cable Flye”,“Overhead Rope Extensions”,“Weighted Dip”]},
 {day:“Tuesday”,   type:“pull”,  label:“PULL”,         sub:“Back / Rear Delts / Biceps”,  ex:[“Chest Supported Machine Row”,“Straight Bar Lat Pulldown”,“Wide Grip Cable Row”,“Cable Rear Delt Flyes”,“DB Hammer Curls”,“High Cable Curls”]},
@@ -401,3 +403,5 @@ phaseCards +
 }
 
 renderWorkout();
+
+});
