@@ -14,6 +14,7 @@
 <title>14-Week Hypertrophy</title>
 <style>
 
+
 :root {
   --bg: #0a0a0c;
   --bg2: #111116;
@@ -171,10 +172,54 @@ input[type=number] { -moz-appearance: textfield; }
 .prin-desc { font-size: 11px; color: var(--text2); line-height: 1.6; font-weight: 300; }
 ::-webkit-scrollbar { width: 0; background: transparent; }
 
+
+/* WEEK COMPLETE */
+.week-complete-bar { margin: 0 16px 12px; padding: 10px 14px; background: rgba(212,255,0,0.1); border: 1px solid rgba(212,255,0,0.3); border-radius: var(--radius-sm); display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--accent); font-weight: 600; }
+.week-complete-bar svg { flex-shrink: 0; }
+
+/* EXERCISE INFO POPUP */
+.ex-info-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.ex-info-overlay.open { opacity: 1; pointer-events: all; }
+.ex-info-popup { background: var(--bg2); border-radius: 20px 20px 0 0; width: 100%; max-height: 80vh; overflow-y: auto; padding-bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1); }
+.ex-info-overlay.open .ex-info-popup { transform: translateY(0); }
+.ex-info-popup .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 12px auto 0; }
+.ex-info-body { padding: 16px 20px 8px; }
+.ex-info-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.03em; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.ex-info-muscle { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.ex-info-section { margin-bottom: 14px; }
+.ex-info-section-title { font-size: 11px; font-weight: 600; color: var(--text); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+.ex-info-text { font-size: 13px; color: var(--text2); line-height: 1.7; font-weight: 300; }
+.ex-info-tips { list-style: none; }
+.ex-info-tips li { font-size: 13px; color: var(--text2); line-height: 1.6; font-weight: 300; padding: 4px 0; padding-left: 14px; position: relative; }
+.ex-info-tips li::before { content: ""; position: absolute; left: 0; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* REST TIMER */
+.timer-bar { position: fixed; bottom: calc(58px + env(safe-area-inset-bottom)); left: 0; right: 0; z-index: 150; display: flex; align-items: center; gap: 0; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); }
+.timer-bar.visible { transform: translateY(0); }
+.timer-inner { margin: 0 12px 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; gap: 12px; width: 100%; box-shadow: 0 -4px 24px rgba(0,0,0,0.4); }
+.timer-ring { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring-bg { fill: none; stroke: var(--border2); stroke-width: 3; }
+.timer-ring-fg { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: var(--text); }
+.timer-text { flex: 1; }
+.timer-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+.timer-countdown { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--text); line-height: 1; }
+.timer-countdown.done { color: var(--accent); }
+.timer-actions { display: flex; gap: 8px; }
+.timer-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; }
+.timer-btn.accent { background: var(--accent); color: #0a0a0c; border-color: var(--accent); font-weight: 700; }
+.timer-settings { padding: 0 20px 16px; border-top: 1px solid var(--border); margin-top: 4px; }
+.timer-settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+.timer-settings-label { font-size: 13px; color: var(--text2); }
+.timer-dur-pick { display: flex; gap: 6px; }
+.dur-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; }
+.dur-btn.active { background: var(--accent); color: #0a0a0c; border-color: var(--accent); font-weight: 700; }
+
 </style>
 </head>
 <body>
-<div style="position:fixed;top:6px;right:10px;z-index:9999;font-family:monospace;font-size:10px;color:#d4ff00;opacity:0.6;pointer-events:none">BUILD 20260411-104633</div>
+<div style="position:fixed;top:6px;right:10px;z-index:9999;font-family:monospace;font-size:10px;color:#d4ff00;opacity:0.6;pointer-events:none">BUILD 20260411-105513</div>
 <div id="app">
   <div id="v-workout" class="view"></div>
   <div id="v-progress" class="view hidden"></div>
@@ -193,11 +238,196 @@ input[type=number] { -moz-appearance: textfield; }
       Overview
     </button>
   </nav>
+  <div class="timer-bar" id="timer-bar">
+    <div class="timer-inner">
+      <div class="timer-ring">
+        <svg width="40" height="40" viewBox="0 0 40 40">
+          <circle class="timer-ring-bg" cx="20" cy="20" r="17"/>
+          <circle class="timer-ring-fg" id="timer-ring-fg" cx="20" cy="20" r="17" style="stroke-dasharray:106.8;stroke-dashoffset:0"/>
+        </svg>
+        <div class="timer-ring-label" id="timer-ring-label"></div>
+      </div>
+      <div class="timer-text">
+        <div class="timer-label">REST TIMER</div>
+        <div class="timer-countdown" id="timer-countdown">2:00</div>
+      </div>
+      <div class="timer-actions">
+        <button class="timer-btn" onclick="startTimer()">Reset</button>
+        <button class="timer-btn accent" onclick="stopTimer()">Skip</button>
+      </div>
+    </div>
+  </div>
+  <div id="ex-info-overlay" class="ex-info-overlay" onclick="if(event.target===this)closeExInfo()">
+    <div id="ex-info-popup" class="ex-info-popup"></div>
+  </div>
   <div id="overlay" class="overlay" onclick="overlayClick(event)">
     <div id="modal" class="modal"></div>
   </div>
 </div>
 <script>
+
+var EX_INFO = {
+  "Seated DB Lateral Raise":     {muscle:"Side Delts", exec:"Sit upright, dumbbells at sides. Raise arms out to shoulder height with a slight forward lean and thumbs slightly down. Control the descent.", tips:["Lead with elbows, not wrists","Stop at shoulder height - going higher shifts load to traps","Keep a slight bend in the elbows throughout","Slow the negative down to 2-3 seconds"]},
+  "Incline Barbell Press":       {muscle:"Upper Chest / Front Delts", exec:"Set bench to 30-45 degrees. Grip slightly wider than shoulder width. Lower bar to upper chest under control, press to lockout.", tips:["Tuck elbows at 45-75 degrees - not flared","Retract and depress scapula before unracking","Full range of motion - touch the chest","Drive feet into floor for stability"]},
+  "Seated DB Shoulder Press":    {muscle:"Front + Side Delts / Triceps", exec:"Sit upright with back supported. Start with dumbbells at ear height, elbows slightly in front of the body. Press overhead to near lockout.", tips:["Do not flare elbows out excessively","Keep core braced throughout","Stop just short of lockout to maintain tension","Control the descent to ear level"]},
+  "Seated Chest Machine Press":  {muscle:"Chest / Front Delts / Triceps", exec:"Adjust seat so handles are at mid-chest height. Drive handles forward to near lockout, squeeze chest at top. Slow return.", tips:["Focus on squeezing chest - not just moving arms","Keep shoulders depressed, not shrugged","Full stretch at the bottom without pain","Vary grip width across weeks for different stimuli"]},
+  "High to Low Cable Flye":      {muscle:"Lower / Mid Chest", exec:"Set cables high. Stand in split stance, arms slightly bent. Pull handles down and across body, meeting at hip level. Squeeze chest hard.", tips:["Keep a fixed slight bend in elbows throughout","Lead with the pinkies to maximize chest activation","Control the stretch at the top","Do not use momentum - pure muscle contraction"]},
+  "Overhead Rope Extensions":    {muscle:"Long Head Triceps", exec:"Face away from cable, rope overhead. Extend arms forward and down until fully straight. Squeeze triceps hard at lockout. Slow return.", tips:["Keep elbows pointed forward and still","Full extension is critical for long head stretch","Lean slightly forward for better positioning","Do not let elbows flare wide"]},
+  "Weighted Dip":                {muscle:"Chest / Triceps / Front Delts", exec:"Use a dip belt or hold dumbbell. Lower until shoulders are below elbows, then press back to lockout. Lean forward for chest emphasis.", tips:["Forward lean = more chest. Upright = more triceps","Go to full depth - shoulder below elbow","Control the descent - no dropping","Lock out fully at the top for triceps"]},
+  "Chest Supported Machine Row": {muscle:"Mid Back / Lats / Rear Delts", exec:"Lie chest against pad. Pull handles back to hips, driving elbows back. Squeeze hard at peak contraction. Return with control.", tips:["Drive elbows back - do not curl with biceps","Focus on retracting shoulder blades","Pause 1 second at peak contraction","Keep chest pressed against pad throughout"]},
+  "Straight Bar Lat Pulldown":   {muscle:"Lats / Biceps", exec:"Grip bar slightly wider than shoulders. Pull bar to upper chest, driving elbows down and back. Lean back slightly. Control the ascent.", tips:["Think elbows to back pockets - not hands to chest","Keep chest up and proud throughout","Full stretch at top - let lats elongate","Do not use momentum or swing"]},
+  "Wide Grip Cable Row":         {muscle:"Upper Back / Rear Delts", exec:"Sit upright, use wide grip attachment. Pull to lower chest, flaring elbows out wide. Squeeze upper back. Slowly return to full stretch.", tips:["Wide grip + flared elbows = more upper back and rear delt","Keep torso upright - minimal lean","Full stretch forward is essential","Squeeze shoulder blades together at peak"]},
+  "Cable Rear Delt Flyes":       {muscle:"Rear Delts", exec:"Set cables at face height, cross them. Pull handles out to sides with slight bend in elbows. Squeeze rear delts. Return slowly.", tips:["Lead with elbows, not hands","Think about pointing elbows to the walls","Very light weight - rear delts are small","15-20 rep range works best here"]},
+  "DB Hammer Curls":             {muscle:"Biceps / Brachialis / Brachioradialis", exec:"Neutral grip (thumbs up). Curl dumbbells to shoulder height. Keep elbows fixed at sides. Lower with control.", tips:["Neutral grip hits brachialis hard - gives arm thickness","Do not swing or use momentum","Can alternate arms or do both together","Keep elbows pinned at sides throughout"]},
+  "High Cable Curls":            {muscle:"Biceps (short head / peak)", exec:"Set cables at shoulder height, arms out wide. Curl hands toward ears. Squeeze biceps hard at peak. Lower with control.", tips:["Arms stay at shoulder height - do not drop elbows","Think about touching hands to ears","Great for bicep peak development","Use a full range of motion"]},
+  "Quad Extension":              {muscle:"Quadriceps", exec:"Sit in machine, pad on lower shin. Extend legs to full lockout. Squeeze hard for 1-2 seconds. Lower slowly under control.", tips:["Full lockout is essential for quad activation","Slow 3-second negative for more stimulus","Point toes slightly inward for VMO emphasis","Do not let weight stack touch between reps"]},
+  "Hack Squat":                  {muscle:"Quads / Glutes", exec:"Place feet shoulder width on platform. Lower under control to 90+ degrees keeping back flat against pad. Drive through heels to lockout.", tips:["High foot placement = more glutes. Low = more quads","Keep knees tracking over toes","Full depth if mobility allows","Do not let knees cave inward"]},
+  "Barbell RDL":                 {muscle:"Hamstrings / Glutes / Erectors", exec:"Hip-width stance, soft knees. Hinge at hips pushing them back, bar stays close to legs. Lower to mid-shin or when hamstrings are fully stretched. Drive hips forward to return.", tips:["This is a hip hinge - not a squat","Feel the hamstring stretch at the bottom","Keep bar dragging up your shins/thighs","Do not round the lower back"]},
+  "Leg Press":                   {muscle:"Quads / Glutes / Hamstrings", exec:"Feet shoulder width on platform. Lower sled until knees reach 90 degrees or less. Press back to near lockout without locking knees.", tips:["Do not lock knees at the top","High feet = more glutes and hams. Low = more quads","Control the descent - do not bounce","Keep lower back pressed against pad"]},
+  "Hamstring Curl":              {muscle:"Hamstrings", exec:"Lie prone, pad behind ankles. Curl heels toward glutes as far as possible. Squeeze for 1 second. Lower with full control over 3 seconds.", tips:["Plantar flex feet (point toes) for more hamstring activation","Full range of motion - heels to glutes","Slow 3-second eccentric is critical here","Do not let hips rise off the pad"]},
+  "Walking Lunges":              {muscle:"Quads / Glutes / Hamstrings", exec:"Step forward, lower back knee toward floor, front shin stays vertical. Drive through front heel to stand. Alternate legs walking forward.", tips:["Keep torso upright throughout","Front knee tracks over toes - not caving in","Full depth - back knee just above floor","Take long strides for more glute emphasis"]},
+  "Standing Calf Raises":        {muscle:"Gastrocnemius / Soleus", exec:"Stand on edge of step or calf raise machine. Lower heels fully below platform. Drive up as high as possible. Pause at top. Lower slowly.", tips:["Full stretch at the bottom is non-negotiable","Pause 1 second at peak contraction","Do not bounce at the bottom","Straight knees = gastrocnemius. Bent knees = soleus"]},
+  "Seated Machine Lateral Raise":{muscle:"Side Delts", exec:"Sit in machine, pads on forearms or wrists. Raise arms to shoulder height. Squeeze side delts at top. Slow controlled descent.", tips:["Machine version allows constant tension","Stop at shoulder height","Control the negative - do not let it drop","Great finisher to pre-exhaust delts"]},
+  "Seated Barbell Shoulder Press":{muscle:"Front + Side Delts / Triceps", exec:"Seated, bar in front at chin. Press overhead to near lockout. Lower to chin level under control. Keep core tight.", tips:["Bar path should be slightly forward - not straight up","Do not crash bar into clavicle","Keep core braced and back against pad","Slightly wider than shoulder grip works well"]},
+  "CS DB Lateral Raises":        {muscle:"Side Delts", exec:"Lie chest on incline bench. Dumbbells hang below. Raise arms out to sides to shoulder height. Control descent.", tips:["Chest support eliminates cheating and momentum","Pure side delt isolation","Thumbs slightly down at top for better activation","Very light weight - this is an isolation move"]},
+  "Rope Face Pulls":             {muscle:"Rear Delts / External Rotators / Upper Traps", exec:"Cable at face height, rope attachment. Pull to forehead with elbows high and wide. Externally rotate at peak - hands end beside ears. Return with control.", tips:["Elbows must stay high - level with or above hands","External rotation at end is key for rotator cuff health","Light weight, high reps, perfect form","Crucial for shoulder health and rear delt development"]},
+  "EZ Bar Tricep Extensions":    {muscle:"Triceps (all heads)", exec:"Lie on bench, EZ bar above chest. Keeping elbows fixed, lower bar to forehead or slightly behind head. Extend back to lockout.", tips:["Keep elbows pointing straight up - do not flare","Going slightly behind head stretches long head more","Do not let elbows drift forward","Full lockout at top"]},
+  "Incline DB Curls":            {muscle:"Biceps (long head / stretch)", exec:"Lie on incline bench, arms hang straight down. Curl dumbbells up with supinated grip. Squeeze at top. Full stretch at bottom.", tips:["The stretch at the bottom is the key benefit of this exercise","Do not let shoulders round forward","Supinate fully as you curl up","Control the descent all the way to full extension"]},
+  "DB Skull Crush":              {muscle:"Triceps (long head)", exec:"Lie on bench, dumbbells above chest neutral grip. Hinge at elbows, lower dumbbells beside head. Extend back to start.", tips:["Keep elbows fixed - only forearms move","Lower beside/behind head for long head stretch","Neutral grip is easier on the wrists than bar","Control at the bottom - do not bounce"]},
+  "Close Grip Pulldown":         {muscle:"Lats / Biceps", exec:"Use close neutral grip handle. Pull to upper chest driving elbows straight down. Lean back slightly. Full stretch at top.", tips:["Elbows drive down toward hips","Full stretch at top - arms fully extended","Keep chest up throughout","Squeeze lats hard at bottom"]},
+  "Flat Smith Machine Press":    {muscle:"Chest / Triceps / Front Delts", exec:"Bar above mid-chest. Unrack and lower to chest under control. Press back to lockout. Smith track keeps bar path fixed.", tips:["Use the fixed bar path to really focus on chest contraction","Touch the chest on every rep","Elbows at 45-75 degrees","Full lockout at top"]},
+  "Single Arm DB Row":           {muscle:"Lats / Mid Back / Biceps", exec:"Knee and hand on bench. Pull dumbbell to hip, driving elbow straight back. Full stretch at bottom. Squeeze hard at top.", tips:["Drive elbow back - not up","Think about putting the dumbbell in your back pocket","Full range of motion - arm fully extended at bottom","Keep hips and shoulders square"]},
+  "Barbell Row":                 {muscle:"Lats / Mid Back / Biceps / Rear Delts", exec:"Hip hinge to 45 degrees. Overhand grip. Pull bar to lower chest/upper abdomen. Keep back flat. Lower with control.", tips:["Hinge is key - torso at roughly 45 degrees","Pull to belly button for more lats. Higher for upper back","Keep the bar close to your body throughout","Do not jerk or use momentum"]},
+  "Pec Dec Flye":                {muscle:"Chest (inner / mid)", exec:"Sit in machine, arms on pads. Bring pads together squeezing chest hard. Pause at peak. Open arms slowly to full stretch.", tips:["Squeeze chest hard at peak contraction","Full stretch at the back - do not limit range","Keep shoulders depressed throughout","Slow controlled negative for maximum stretch"]},
+};
+
+function showExInfo(exName) {
+  var info = EX_INFO[exName];
+  var popup = document.getElementById("ex-info-popup");
+  var overlay = document.getElementById("ex-info-overlay");
+  if (!info) {
+    popup.innerHTML = "<div class=\"modal-handle\"></div><div class=\"ex-info-body\"><div class=\"ex-info-name\">" + exName + "</div><div class=\"ex-info-text\" style=\"margin-top:12px\">No description available yet.</div><div style=\"height:20px\"></div></div>";
+  } else {
+    var tips = info.tips.map(function(t){ return "<li>" + t + "</li>"; }).join("");
+    popup.innerHTML = "<div class=\"modal-handle\"></div><div class=\"ex-info-body\">" +
+      "<div class=\"ex-info-name\">" + exName + "</div>" +
+      "<div class=\"ex-info-muscle\">" + info.muscle + "</div>" +
+      "<div class=\"ex-info-section\"><div class=\"ex-info-section-title\">Execution</div><div class=\"ex-info-text\">" + info.exec + "</div></div>" +
+      "<div class=\"ex-info-section\"><div class=\"ex-info-section-title\">Key Tips</div><ul class=\"ex-info-tips\">" + tips + "</ul></div>" +
+      "</div><div style=\"height:20px\"></div>";
+  }
+  overlay.classList.add("open");
+}
+function closeExInfo() { document.getElementById("ex-info-overlay").classList.remove("open"); }
+
+
+var timerDuration = 120; // seconds, default 2 min
+var timerRemaining = 0;
+var timerInterval = null;
+var timerAudio = null;
+
+function setTimerDuration(sec) {
+  timerDuration = sec;
+  document.querySelectorAll(".dur-btn").forEach(function(b) {
+    b.classList.toggle("active", +b.dataset.dur === sec);
+  });
+  // Save preference
+  try { localStorage.setItem("hype14w_timer", sec); } catch(e) {}
+}
+
+function loadTimerPref() {
+  try {
+    var saved = localStorage.getItem("hype14w_timer");
+    if (saved) timerDuration = +saved;
+  } catch(e) {}
+}
+
+function startTimer() {
+  stopTimer();
+  timerRemaining = timerDuration;
+  var bar = document.getElementById("timer-bar");
+  if (bar) bar.classList.add("visible");
+  updateTimerDisplay();
+  timerInterval = setInterval(function() {
+    timerRemaining--;
+    updateTimerDisplay();
+    if (timerRemaining <= 0) {
+      stopTimer();
+      timerDone();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  var bar = document.getElementById("timer-bar");
+  if (bar) bar.classList.remove("visible");
+}
+
+function timerDone() {
+  var bar = document.getElementById("timer-bar");
+  if (bar) bar.classList.add("visible");
+  var cd = document.getElementById("timer-countdown");
+  if (cd) { cd.textContent = "GO!"; cd.classList.add("done"); }
+  // Play beep
+  playBeep();
+  // Browser notification if permission granted
+  if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+    new Notification("Rest over!", { body: "Time to hit your next set.", icon: "/Pwa/icon-192.png" });
+  }
+  setTimeout(function() {
+    var bar2 = document.getElementById("timer-bar");
+    if (bar2) bar2.classList.remove("visible");
+    var cd2 = document.getElementById("timer-countdown");
+    if (cd2) cd2.classList.remove("done");
+  }, 3000);
+}
+
+function playBeep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq, start, dur) {
+      var o = ctx.createOscillator();
+      var g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = freq;
+      o.type = "sine";
+      g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+      o.start(ctx.currentTime + start);
+      o.stop(ctx.currentTime + start + dur);
+    }
+    beep(880, 0,    0.15);
+    beep(880, 0.18, 0.15);
+    beep(1100,0.36, 0.3);
+  } catch(e) {}
+}
+
+function updateTimerDisplay() {
+  var cd = document.getElementById("timer-countdown");
+  var ring = document.getElementById("timer-ring-fg");
+  var lbl  = document.getElementById("timer-ring-label");
+  if (!cd) return;
+  var mins = Math.floor(timerRemaining / 60);
+  var secs = timerRemaining % 60;
+  cd.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+  // Ring
+  var pct = timerDuration > 0 ? timerRemaining / timerDuration : 0;
+  var circ = 2 * Math.PI * 17; // r=17
+  if (ring) {
+    ring.style.strokeDasharray = circ;
+    ring.style.strokeDashoffset = circ * (1 - pct);
+  }
+  if (lbl) lbl.textContent = timerRemaining <= 0 ? "" : "";
+}
+
+function requestNotifPermission() {
+  if (typeof Notification !== "undefined" && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+}
+
+
 
 var SPLIT = [
   {day:"Monday",    type:"push",  label:"PUSH",         sub:"Chest / Shoulders / Triceps", ex:["Seated DB Lateral Raise","Incline Barbell Press","Seated DB Shoulder Press","Seated Chest Machine Press","High to Low Cable Flye","Overhead Rope Extensions","Weighted Dip"]},
@@ -290,7 +520,9 @@ function setTab(tab) {
     var v = g("v-" + t);
     if (t === tab) v.classList.remove("hidden"); else v.classList.add("hidden");
   });
-  if (tab === "workout")  renderWorkout();
+  if (tab === "workout")  loadTimerPref();
+requestNotifPermission();
+renderWorkout();
   if (tab === "progress") renderProgress();
   if (tab === "overview") renderOverview();
 }
@@ -315,7 +547,11 @@ function renderWorkout() {
       '<div class="wb-stat"><div class="wb-val">' + wk.rir.split(" ")[0] + '</div><div class="wb-lbl">RIR</div></div>' +
     '</div></div>';
 
-  var days = "";
+  // Check if week is complete
+var allEx = [];
+for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allEx.push(SPLIT[di].ex[ei]); }
+var weekDone = allEx.every(function(ex) { return getDone(db, curWeek, ex) >= wk.sets; });
+var days = "";
   for (var d = 0; d < SPLIT.length; d++) {
     var day = SPLIT[d];
     if (day.type === "rest") {
@@ -363,6 +599,7 @@ function renderWorkout() {
     '<div class="page-header"><h1>THIS WEEK\'S <span>WORKOUT</span></h1><p>' + wk.phase + ' - ' + wk.sets + ' sets - ' + wk.reps + ' reps - ' + wk.rir + '</p></div>' +
     '<div class="week-strip" id="wstrip">' + chips + '</div>' +
     banner +
+    (weekDone ? '<div class="week-complete-bar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Week ' + wk.n + ' complete - great work!</div>' : '') +
     '<div class="coach-note">' + wk.note + '</div>' +
     days +
     '<div style="height:8px"></div>';
@@ -432,7 +669,7 @@ function openModal(safeEx, dayType) {
     '<div class="modal-handle"></div>' +
     '<div class="modal-head">' +
       '<div class="modal-daytype">' + dayType.toUpperCase() + '</div>' +
-      '<div class="modal-title">' + ex + '</div>' +
+      '<div class="modal-title" onclick="showExInfo(\'' + ex.replace(/\'/g, "\'\'") + '\')" style="cursor:pointer;border-bottom:1px dashed rgba(212,255,0,0.3);display:inline-block;padding-bottom:2px">' + ex + ' <span style="font-size:14px;color:var(--accent);vertical-align:middle">?</span></div>' +
       '<div class="modal-sub">' + wk.sets + ' sets - ' + wk.reps + ' reps - ' + wk.rir + ' - Week ' + wk.n + '</div>' +
       (suggestKg > 0 ? '<div class="modal-hint">Last logged: ' + suggestKg + ' kg</div>' : '') +
     '</div>' +
@@ -454,6 +691,9 @@ function toggleCheck(i, suggestKg, repsPh) {
     var rpEl = g("rp" + i);
     if (kgEl && !kgEl.value && suggestKg) kgEl.value = suggestKg;
     if (rpEl && !rpEl.value) rpEl.value = repsPh;
+    startTimer();
+  } else {
+    stopTimer();
   }
 }
 
@@ -602,6 +842,7 @@ function renderOverview() {
 }
 
 renderWorkout();
+
 
 </script>
 </body>
