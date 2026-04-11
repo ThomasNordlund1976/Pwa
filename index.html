@@ -300,22 +300,109 @@ var EX_INFO = {
   "Pec Dec Flye":                {muscle:"Chest (inner / mid)", exec:"Sit in machine, arms on pads. Bring pads together squeezing chest hard. Pause at peak. Open arms slowly to full stretch.", tips:["Squeeze chest hard at peak contraction","Full stretch at the back - do not limit range","Keep shoulders depressed throughout","Slow controlled negative for maximum stretch"]},
 };
 
+var MW_LINKS = {
+  "Seated DB Lateral Raise": "seated-lateral-raise",
+  "Incline Barbell Press": "barbell-incline-bench-press",
+  "Seated DB Shoulder Press": "dumbbell-seated-overhead-press",
+  "Seated Chest Machine Press": "machine-chest-press",
+  "High to Low Cable Flye": "cable-pec-fly",
+  "Overhead Rope Extensions": "cable-rope-pushdown",
+  "Weighted Dip": "weighted-dip",
+  "Chest Supported Machine Row": "machine-chest-supported-row",
+  "Straight Bar Lat Pulldown": "machine-pulldown",
+  "Wide Grip Cable Row": "machine-seated-cable-row",
+  "Cable Rear Delt Flyes": "cable-high-single-arm-rear-delt-fly",
+  "DB Hammer Curls": "dumbbell-hammer-curl",
+  "High Cable Curls": "cable-bar-curl",
+  "Quad Extension": "machine-leg-extension",
+  "Hack Squat": "machine-hack-squat",
+  "Barbell RDL": "barbell-romanian-deadlift",
+  "Leg Press": "machine-horizontal-leg-press",
+  "Hamstring Curl": "machine-lying-leg-curl",
+  "Walking Lunges": "dumbbell-walking-lunge",
+  "Standing Calf Raises": "machine-standing-calf-raises",
+  "Seated Machine Lateral Raise": "machine-lateral-raise",
+  "Seated Barbell Shoulder Press": "barbell-overhead-press",
+  "CS DB Lateral Raises": "dumbbell-chest-supported-lateral-raise",
+  "Rope Face Pulls": "cable-seated-rope-face-pull",
+  "EZ Bar Tricep Extensions": "barbell-laying-triceps-extensions",
+  "Incline DB Curls": "incline-dumbbell-curl",
+  "DB Skull Crush": "dumbbell-skullcrusher",
+  "Close Grip Pulldown": "cable-close-grip-pulldown",
+  "Flat Smith Machine Press": "smith-machine-bench-press",
+  "Single Arm DB Row": "dumbbell-kneeling-single-arm-row",
+  "Barbell Row": "barbell-bent-over-row",
+  "Pec Dec Flye": "machine-pec-deck-fly",
+};
+var YT_LINKS = {
+  "Seated DB Lateral Raise": "seated dumbbell lateral raise tutorial",
+  "Incline Barbell Press": "incline barbell bench press tutorial form",
+  "Seated DB Shoulder Press": "seated dumbbell shoulder press tutorial",
+  "Seated Chest Machine Press": "chest machine press tutorial",
+  "High to Low Cable Flye": "high to low cable fly chest tutorial",
+  "Overhead Rope Extensions": "cable overhead tricep extension tutorial",
+  "Weighted Dip": "weighted dip tricep chest tutorial",
+  "Chest Supported Machine Row": "chest supported row machine tutorial",
+  "Straight Bar Lat Pulldown": "straight bar lat pulldown tutorial form",
+  "Wide Grip Cable Row": "wide grip cable row tutorial",
+  "Cable Rear Delt Flyes": "cable rear delt fly tutorial",
+  "DB Hammer Curls": "dumbbell hammer curl tutorial",
+  "High Cable Curls": "high cable curl bicep tutorial",
+  "Quad Extension": "leg extension machine quad tutorial",
+  "Hack Squat": "hack squat machine tutorial form",
+  "Barbell RDL": "barbell Romanian deadlift tutorial form",
+  "Leg Press": "leg press machine tutorial form",
+  "Hamstring Curl": "lying leg curl hamstring tutorial",
+  "Walking Lunges": "walking lunges tutorial form",
+  "Standing Calf Raises": "standing calf raise tutorial",
+  "Seated Machine Lateral Raise": "machine lateral raise shoulder tutorial",
+  "Seated Barbell Shoulder Press": "seated barbell overhead press tutorial",
+  "CS DB Lateral Raises": "chest supported dumbbell lateral raise tutorial",
+  "Rope Face Pulls": "cable rope face pull tutorial",
+  "EZ Bar Tricep Extensions": "EZ bar skull crusher lying tricep extension tutorial",
+  "Incline DB Curls": "incline dumbbell curl bicep tutorial",
+  "DB Skull Crush": "dumbbell skull crusher tricep tutorial",
+  "Close Grip Pulldown": "close grip lat pulldown tutorial",
+  "Flat Smith Machine Press": "Smith machine bench press tutorial",
+  "Single Arm DB Row": "single arm dumbbell row tutorial",
+  "Barbell Row": "barbell bent over row tutorial form",
+  "Pec Dec Flye": "pec deck fly machine chest tutorial",
+};
+
 function showExInfo(exName) {
-  var info = EX_INFO[exName];
+  var ex = exName;
+  var info = EX_INFO[ex];
   var popup = document.getElementById("ex-info-popup");
-  var overlay = document.getElementById("ex-info-overlay");
+  var mwSlug = MW_LINKS[ex] || "";
+  var ytQuery = YT_LINKS[ex] || (ex + " exercise tutorial");
+  var mwUrl = mwSlug ? "https://musclewiki.com/exercise/" + mwSlug : "";
+  var ytUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(ytQuery);
+
+  var linkBtns = '<div style="display:flex;gap:8px;margin-bottom:16px">';
+  if (mwUrl) {
+    linkBtns += '<a href="' + mwUrl + '" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:var(--accent-dim);border:1px solid rgba(212,255,0,0.25);border-radius:9px;text-decoration:none;color:var(--accent);font-size:12px;font-weight:600;font-family:DM Sans,sans-serif">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      'Muscle Wiki</a>';
+  }
+  linkBtns += '<a href="' + ytUrl + '" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);border-radius:9px;text-decoration:none;color:#ff6060;font-size:12px;font-weight:600;font-family:DM Sans,sans-serif">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.1 2.8 12 2.8 12 2.8s-4.1 0-6.8.1c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.2v1.9C.7 15.3 1 17.3 1 17.3s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.6 21.5 12 21.5 12 21.5s4.1 0 6.8-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-1.9C23.3 9.1 23 7 23 7zM9.7 14.9V8.6l6.5 3.2-6.5 3.1z"/></svg>' +
+    'YouTube</a>';
+  linkBtns += '</div>';
+
   if (!info) {
-    popup.innerHTML = "<div class=\"modal-handle\"></div><div class=\"ex-info-body\"><div class=\"ex-info-name\">" + exName + "</div><div class=\"ex-info-text\" style=\"margin-top:12px\">No description available yet.</div><div style=\"height:20px\"></div></div>";
+    popup.innerHTML = '<div class="modal-handle"></div><div class="ex-info-body"><div class="ex-info-name">' + ex + '</div><div style="height:10px"></div>' + linkBtns + '</div>';
   } else {
     var tips = info.tips.map(function(t){ return "<li>" + t + "</li>"; }).join("");
-    popup.innerHTML = "<div class=\"modal-handle\"></div><div class=\"ex-info-body\">" +
-      "<div class=\"ex-info-name\">" + exName + "</div>" +
-      "<div class=\"ex-info-muscle\">" + info.muscle + "</div>" +
-      "<div class=\"ex-info-section\"><div class=\"ex-info-section-title\">Execution</div><div class=\"ex-info-text\">" + info.exec + "</div></div>" +
-      "<div class=\"ex-info-section\"><div class=\"ex-info-section-title\">Key Tips</div><ul class=\"ex-info-tips\">" + tips + "</ul></div>" +
-      "</div><div style=\"height:20px\"></div>";
+    popup.innerHTML = '<div class="modal-handle"></div><div class="ex-info-body">' +
+      '<div class="ex-info-name">' + ex + '</div>' +
+      '<div class="ex-info-muscle">' + info.muscle + '</div>' +
+      '<div style="height:12px"></div>' +
+      linkBtns +
+      '<div class="ex-info-section"><div class="ex-info-section-title">Execution</div><div class="ex-info-text">' + info.exec + '</div></div>' +
+      '<div class="ex-info-section"><div class="ex-info-section-title">Key Tips</div><ul class="ex-info-tips">' + tips + '</ul></div>' +
+      '</div><div style="height:20px"></div>';
   }
-  overlay.classList.add("open");
+  document.getElementById("ex-info-overlay").classList.add("open");
 }
 function closeExInfo() { document.getElementById("ex-info-overlay").classList.remove("open"); }
 
