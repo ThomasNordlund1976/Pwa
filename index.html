@@ -214,8 +214,10 @@ input[type=number] { -moz-appearance: textfield; }
 .timer-settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
 .timer-settings-label { font-size: 13px; color: var(--text2); }
 .timer-dur-pick { display: flex; gap: 6px; }
-.dur-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; }
+.dur-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; -webkit-appearance: none; appearance: none; }
 .dur-btn.active { background: var(--accent); color: #0a0a0c; border-color: var(--accent); font-weight: 700; }
+.timer-adjust { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 4px; border-top: 1px solid var(--border); margin-top: 4px; }
+.timer-adjust-label { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
 .quick-done-btn { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
 .quick-done-btn.all-done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 .day-done-btn { margin-left: auto; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; }
@@ -269,6 +271,15 @@ input[type=number] { -moz-appearance: textfield; }
   </div>
 </div>
 <script>
+
+window.onerror = function(msg, src, line, col, err) {
+  var div = document.createElement("div");
+  div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#ff0044;color:#fff;font-family:monospace;font-size:12px;padding:12px;z-index:9999;word-break:break-all;white-space:pre-wrap";
+  div.textContent = "ERROR: " + msg + "\nLine: " + line + " Col: " + col + "\nSrc: " + src + "\n" + (err ? err.stack : "");
+  document.body.appendChild(div);
+  return false;
+};
+
 
 var EX_INFO = {
   "Seated DB Lateral Raise":     {muscle:"Side Delts", exec:"Sit upright, dumbbells at sides. Raise arms out to shoulder height with a slight forward lean and thumbs slightly down. Control the descent.", tips:["Lead with elbows, not wrists","Stop at shoulder height - going higher shifts load to traps","Keep a slight bend in the elbows throughout","Slow the negative down to 2-3 seconds"]},
@@ -412,10 +423,14 @@ function showExInfo(exName) {
 function closeExInfo() { document.getElementById("ex-info-overlay").classList.remove("open"); }
 
 
-var timerDuration = 120; // seconds, default 2 min
+var timerDuration = 120;
+var EX_TIMERS = {"Hack Squat": 180, "Barbell Row": 180, "Close Grip Pulldown": 180, "Weighted Dip": 180, "Wide Grip Cable Row": 180, "Chest Supported Machine Row": 180, "Single Arm DB Row": 180, "Flat Smith Machine Press": 180, "Seated DB Shoulder Press": 180, "Walking Lunges": 180, "Seated Barbell Shoulder Press": 180, "Barbell RDL": 180, "Incline Barbell Press": 180, "Seated Chest Machine Press": 180, "Leg Press": 180, "Straight Bar Lat Pulldown": 180, "DB Skull Crush": 120, "Seated Machine Lateral Raise": 120, "Quad Extension": 120, "CS DB Lateral Raises": 120, "Hamstring Curl": 120, "Overhead Rope Extensions": 120, "DB Hammer Curls": 120, "Standing Calf Raises": 120, "Incline DB Curls": 120, "EZ Bar Tricep Extensions": 120, "Seated DB Lateral Raise": 120};
+var DEFAULT_TIMER = 90;
 var timerRemaining = 0;
 var timerInterval = null;
 var timerAudio = null;
+var curExName = "";
+var curNumSets = 0;
 
 function setTimerDuration(sec) {
   timerDuration = sec;
@@ -709,8 +724,11 @@ var days = "";
 
 function openModal(safeEx, dayType) {
   var ex = decodeURIComponent(safeEx);
+  curExName = ex;
+  timerDuration = (EX_TIMERS[ex] !== undefined) ? EX_TIMERS[ex] : DEFAULT_TIMER;
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
+  curNumSets = wk.sets;
   var existing = dbGet(db, curWeek, ex);
   var history  = getHistory(db, ex);
   var last     = getLastPerf(db, curWeek, ex);
@@ -770,12 +788,25 @@ function openModal(safeEx, dayType) {
     '</div>' +
     '<div class="set-logger"><div class="logger-title">Log Sets</div>' + setRows + '</div>' +
     histHtml +
+    '<div class="timer-adjust"><div class="timer-adjust-label">Rest timer</div>' +
+    '<div class="timer-dur-pick">' +
+    '<button class="dur-btn" data-dur="60" onclick="setTimerDuration(60)">1:00</button>' +
+    '<button class="dur-btn" data-dur="90" onclick="setTimerDuration(90)">1:30</button>' +
+    '<button class="dur-btn" data-dur="120" onclick="setTimerDuration(120)">2:00</button>' +
+    '<button class="dur-btn" data-dur="180" onclick="setTimerDuration(180)">3:00</button>' +
+    '</div></div>' +
     '<div class="modal-actions">' +
-      '<button class="btn btn-primary" onclick="saveModal(\'' + safeEx + '\',' + wk.sets + ')">Save Sets</button>' +
-      '<button class="btn btn-ghost" onclick="closeModal()">Close</button>' +
+    '<button class="btn btn-primary" onclick="saveModal()">Save Sets</button>' +
+    '<button class="btn btn-ghost" onclick="closeModal()">Close</button>' +
     '</div><div style="height:8px"></div>';
 
   g("overlay").classList.add("open");
+  // highlight correct timer button
+  setTimeout(function() {
+    document.querySelectorAll(".dur-btn").forEach(function(b){
+      b.classList.toggle("active", +b.dataset.dur === timerDuration);
+    });
+  }, 10);
 }
 
 function toggleCheck(i, suggestKg, repsPh) {
@@ -792,8 +823,9 @@ function toggleCheck(i, suggestKg, repsPh) {
   }
 }
 
-function saveModal(safeEx, numSets) {
-  var ex = decodeURIComponent(safeEx);
+function saveModal() {
+  var ex = curExName;
+  var numSets = curNumSets;
   var db = dbLoad();
   var sets = [];
   for (var i = 0; i < numSets; i++) {
@@ -817,6 +849,7 @@ function quickCompleteEx(safeEx) {
   var ex = decodeURIComponent(safeEx);
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
+  curNumSets = wk.sets;
   var existing = dbGet(db, curWeek, ex);
   var last = getLastPerf(db, curWeek, ex);
   var sets = [];
