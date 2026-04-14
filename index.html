@@ -216,6 +216,10 @@ input[type=number] { -moz-appearance: textfield; }
 .timer-dur-pick { display: flex; gap: 6px; }
 .dur-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; }
 .dur-btn.active { background: var(--accent); color: #0a0a0c; border-color: var(--accent); font-weight: 700; }
+.quick-done-btn { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+.quick-done-btn.all-done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.day-done-btn { margin-left: auto; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.day-done-btn.done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
 </style>
 </head>
@@ -669,14 +673,19 @@ var days = "";
         '<div class="ex-right">' +
           '<div class="ex-rx">' + wk.sets + 'x' + wk.reps + '</div>' +
           '<div class="ex-bubble' + (isDone ? " done" : "") + '">' + done + '/' + wk.sets + '</div>' +
+          '<button class="quick-done-btn' + (isDone ? " all-done" : "") + '" onclick="event.stopPropagation();quickCompleteEx(\'' + safeEx + '\')" title="Mark all sets done">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</button>' +
         '</div></div>';
     }
+    var dayAllDone = day.ex.length > 0 && day.ex.every(function(exName){ return getDone(db, curWeek, exName) >= wk.sets; });
     days += '<div class="day-section">' +
       '<div class="day-header t-' + day.type + '">' +
         '<div class="day-dot"></div>' +
         '<div class="day-day">' + day.day.toUpperCase() + '</div>' +
         '<div class="day-type">' + day.label + '</div>' +
         '<div class="day-sub">' + day.sub + '</div>' +
+        '<button class="day-done-btn' + (dayAllDone ? " done" : "") + '" onclick="event.stopPropagation();markDayDone(' + d + ')" title="Mark whole day done">' + (dayAllDone ? "Day done" : "Mark done") + '</button>' +
       '</div>' +
       '<div class="ex-list">' + rows + '</div></div>';
   }
@@ -801,6 +810,51 @@ function saveModal(safeEx, numSets) {
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
   dbSet(db, curWeek, ex, {sets:sets, date:date});
   closeModal();
+  renderWorkout();
+}
+
+function quickCompleteEx(safeEx) {
+  var ex = decodeURIComponent(safeEx);
+  var db = dbLoad();
+  var wk = WEEKS[curWeek - 1];
+  var existing = dbGet(db, curWeek, ex);
+  var last = getLastPerf(db, curWeek, ex);
+  var sets = [];
+  var now = new Date();
+  var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  for (var i = 0; i < wk.sets; i++) {
+    var existSet = existing && existing.sets && existing.sets[i] ? existing.sets[i] : null;
+    var lastSet  = last && last.sets && last.sets[i] ? last.sets[i] : null;
+    var kg   = (existSet && existSet.kg)   ? existSet.kg   : (lastSet && lastSet.kg   ? lastSet.kg   : "");
+    var reps = (existSet && existSet.reps) ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
+    sets.push({kg: kg, reps: reps, done: true});
+  }
+  dbSet(db, curWeek, ex, {sets: sets, date: date});
+  renderWorkout();
+}
+
+function markDayDone(dayIdx) {
+  var db = dbLoad();
+  var wk = WEEKS[curWeek - 1];
+  var day = SPLIT[dayIdx];
+  var now = new Date();
+  var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  for (var e = 0; e < day.ex.length; e++) {
+    var ex = day.ex[e];
+    var existing = dbGet(db, curWeek, ex);
+    var last = getLastPerf(db, curWeek, ex);
+    var allDone = existing && existing.sets && existing.sets.every(function(s){ return s.done; });
+    if (allDone) continue;
+    var sets = [];
+    for (var i = 0; i < wk.sets; i++) {
+      var existSet = existing && existing.sets && existing.sets[i] ? existing.sets[i] : null;
+      var lastSet  = last && last.sets && last.sets[i] ? last.sets[i] : null;
+      var kg   = (existSet && existSet.kg)   ? existSet.kg   : (lastSet && lastSet.kg   ? lastSet.kg   : "");
+      var reps = (existSet && existSet.reps) ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
+      sets.push({kg: kg, reps: reps, done: true});
+    }
+    dbSet(db, curWeek, ex, {sets: sets, date: date});
+  }
   renderWorkout();
 }
 
