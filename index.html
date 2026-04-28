@@ -796,8 +796,7 @@ function openModal(safeEx, dayType) {
     '<button class="dur-btn" data-dur="180" onclick="setTimerDuration(180)">3:00</button>' +
     '</div></div>' +
     '<div class="modal-actions">' +
-    '<button class="btn btn-primary" onclick="saveModal()">Save Sets</button>' +
-    '<button class="btn btn-ghost" onclick="closeModal()">Close</button>' +
+    '<button class="btn btn-ghost" onclick="closeModal()">Done</button>' +
     '</div><div style="height:8px"></div>';
 
   g("overlay").classList.add("open");
@@ -821,6 +820,7 @@ function toggleCheck(i, suggestKg, repsPh) {
   } else {
     stopTimer();
   }
+  saveModal();
 }
 
 function saveModal() {
