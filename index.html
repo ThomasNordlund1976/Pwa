@@ -881,22 +881,40 @@ function quickCompleteEx(safeEx) {
   var ex = decodeURIComponent(safeEx);
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
-  curNumSets = wk.sets;
   var existing = dbGet(db, curWeek, ex);
-  var last = getLastPerf(db, curWeek, ex);
-  var sets = [];
   var now = new Date();
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+
+  // If all sets already done -> unmark all. Otherwise mark all done.
+  var allDone = existing && existing.sets && existing.sets.length >= wk.sets &&
+                existing.sets.every(function(s){ return s.done; });
+
+  var sets = [];
+  var last = getLastPerf(db, curWeek, ex);
   for (var i = 0; i < wk.sets; i++) {
     var existSet = existing && existing.sets && existing.sets[i] ? existing.sets[i] : null;
     var lastSet  = last && last.sets && last.sets[i] ? last.sets[i] : null;
-    var kg   = (existSet && existSet.kg)   ? existSet.kg   : (lastSet && lastSet.kg   ? lastSet.kg   : "");
-    var reps = (existSet && existSet.reps) ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
-    sets.push({kg: kg, reps: reps, done: true});
+    var kg   = existSet && existSet.kg   ? existSet.kg   : (lastSet && lastSet.kg   ? lastSet.kg   : "");
+    var reps = existSet && existSet.reps ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
+    sets.push({kg: kg, reps: reps, done: !allDone});
   }
   dbSet(db, curWeek, ex, {sets: sets, date: date});
-  renderWorkout();
+  // Silent update - just flip the bubble and quick-done-btn without re-rendering
+  var totalDone = sets.filter(function(s){ return s.done; }).length;
+  var rows = document.querySelectorAll(".ex-row");
+  rows.forEach(function(row) {
+    var nameEl = row.querySelector(".ex-name");
+    if (!nameEl || nameEl.textContent !== ex) return;
+    var bubble = row.querySelector(".ex-bubble");
+    if (bubble) {
+      bubble.textContent = totalDone + "/" + wk.sets;
+      bubble.classList.toggle("done", totalDone >= wk.sets);
+    }
+    var qdBtn = row.querySelector(".quick-done-btn");
+    if (qdBtn) qdBtn.classList.toggle("all-done", totalDone >= wk.sets);
+  });
 }
+
 
 function markDayDone(dayIdx) {
   var db = dbLoad();
