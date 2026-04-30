@@ -194,7 +194,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ex-info-tips li::before { content: ""; position: absolute; left: 0; top: 11px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 
 /* REST TIMER */
-.timer-bar { position: fixed; bottom: -200px; left: 0; right: 0; z-index: 150; display: flex; align-items: center; gap: 0; transition: bottom 0.3s cubic-bezier(0.32,0.72,0,1); pointer-events: none; }
+.timer-bar { position: fixed; bottom: -200px; left: 0; right: 0; z-index: 250; display: flex; align-items: center; gap: 0; transition: bottom 0.3s cubic-bezier(0.32,0.72,0,1); pointer-events: none; }
 .timer-bar.visible { bottom: calc(58px + env(safe-area-inset-bottom)); pointer-events: all; }
 .timer-bar.visible { transform: translateY(0); }
 .timer-inner { margin: 0 12px 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; display: flex; align-items: center; gap: 12px; width: 100%; box-shadow: 0 -4px 24px rgba(0,0,0,0.4); }
