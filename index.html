@@ -223,6 +223,28 @@ input[type=number] { -moz-appearance: textfield; }
 .day-done-btn { margin-left: auto; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .day-done-btn.done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
+
+.advance-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.advance-overlay.open { opacity: 1; pointer-events: all; }
+.advance-box { background: var(--bg2); border: 1px solid var(--border2); border-radius: 16px; padding: 28px 22px; width: 100%; max-width: 340px; text-align: center; }
+.advance-icon { font-size: 48px; margin-bottom: 12px; }
+.advance-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 6px; }
+.advance-sub { font-size: 13px; color: var(--text2); margin-bottom: 22px; line-height: 1.5; }
+.advance-actions { display: flex; flex-direction: column; gap: 10px; }
+.advance-actions .btn { padding: 14px; }
+.btn-accent { background: var(--accent); color: #0a0a0c; border: none; }
+.btn-warn { background: var(--red); color: #fff; border: none; }
+
+
+.advance-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.2s; }
+.advance-overlay.open { opacity:1;pointer-events:all; }
+.advance-box { background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px 22px;width:100%;max-width:340px;text-align:center; }
+.advance-icon { font-size:44px;margin-bottom:12px; }
+.advance-title { font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:0.06em;color:var(--accent);margin-bottom:6px; }
+.advance-sub { font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5; }
+.advance-actions { display:flex;flex-direction:column;gap:10px; }
+.btn-accent { background:var(--accent);color:#0a0a0c;border:none; }
+.btn-warn { background:var(--red);color:#fff;border:none; }
 </style>
 </head>
 <body>
@@ -618,6 +640,75 @@ function getDone(db, week, ex) {
 }
 function g(id) { return document.getElementById(id); }
 
+
+function checkWeekComplete() {
+  var db = dbLoad(); var wk = WEEKS[curWeek-1]; if (!wk) return;
+  var allEx = [];
+  for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allEx.push(SPLIT[di].ex[ei]); }
+  if (!allEx.length) return;
+  if (!allEx.every(function(ex){ return getDone(db,curWeek,ex) >= wk.sets; })) return;
+  var ack = "hype14w_ack";
+  try { if (localStorage.getItem(ack) === String(curWeek)) return; } catch(e) {}
+  setTimeout(function() {
+    if (curWeek >= 14) { showProgramComplete(); } else { showWeekComplete(); }
+    try { localStorage.setItem(ack, String(curWeek)); } catch(e) {}
+  }, 500);
+}
+
+function showWeekComplete() {
+  var nextWk = curWeek + 1; var nw = WEEKS[nextWk-1];
+  document.getElementById("advance-box").innerHTML =
+    '<div class="advance-icon">&#127881;</div>' +
+    '<div class="advance-title">Week ' + curWeek + ' Done!</div>' +
+    '<div class="advance-sub">All sets complete. Ready for week ' + nextWk + '?' +
+    (nw ? '<br><span style="color:var(--accent)">' + nw.phase + ' - ' + nw.sets + ' sets ' + nw.reps + ' reps</span>' : '') + '</div>' +
+    '<div class="advance-actions">' +
+    '<button class="btn btn-accent" onclick="advanceWeek()">Start Week ' + nextWk + ' &#8594;</button>' +
+    '<button class="btn btn-ghost" onclick="closeAdvance()">Stay on Week ' + curWeek + '</button>' +
+    '</div>';
+  document.getElementById("advance-overlay").classList.add("open");
+}
+
+function showProgramComplete() {
+  document.getElementById("advance-box").innerHTML =
+    '<div class="advance-icon">&#127942;</div>' +
+    '<div class="advance-title">Program Complete!</div>' +
+    '<div class="advance-sub">14 weeks of hard work done. Time to decide what\'s next.</div>' +
+    '<div class="advance-actions">' +
+    '<button class="btn btn-accent" onclick="restartProgram()">Restart Program</button>' +
+    '<button class="btn" style="background:var(--surface2);color:var(--text)" onclick="keepTraining()">Keep Training</button>' +
+    '<button class="btn btn-warn" onclick="closeAdvance()">Decide Later</button>' +
+    '</div>';
+  document.getElementById("advance-overlay").classList.add("open");
+}
+
+function advanceWeek() { closeAdvance(); selectWeek(curWeek + 1); }
+
+function keepTraining() {
+  closeAdvance();
+  try { localStorage.removeItem("hype14w_ack"); } catch(e) {}
+}
+
+function restartProgram() {
+  closeAdvance();
+  var db = dbLoad(); var lastWeights = {};
+  WEEKS.forEach(function(w) {
+    SPLIT.forEach(function(day) {
+      (day.ex||[]).forEach(function(ex) {
+        var perf = db[w.n] && db[w.n][ex];
+        if (perf && perf.sets) { var mx=0; perf.sets.forEach(function(s){ if(+s.kg>mx) mx=+s.kg; }); if (mx>0 && (!lastWeights[ex]||mx>lastWeights[ex])) lastWeights[ex]=mx; }
+      });
+    });
+  });
+  try {
+    localStorage.setItem("hype14w", JSON.stringify({lastWeights:lastWeights}));
+    localStorage.removeItem("hype14w_ack");
+  } catch(e) {}
+  selectWeek(1);
+}
+
+function closeAdvance() { document.getElementById("advance-overlay").classList.remove("open"); }
+
 function setTab(tab) {
   curTab = tab;
   ["workout","progress","overview"].forEach(function(t) {
@@ -632,7 +723,7 @@ renderWorkout();
   if (tab === "overview") renderOverview();
 }
 
-function selectWeek(n) { curWeek = n; renderWorkout(); }
+function selectWeek(n) { curWeek = n; try { localStorage.setItem("hype14w_week", String(n)); } catch(e) {} renderWorkout(); }
 
 function renderWorkout() {
   var db = dbLoad();
@@ -842,17 +933,21 @@ function saveModalSilent() {
   var now = new Date();
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
   dbSet(db, curWeek, ex, {sets: sets, date: date});
-  // Update just the bubble for this exercise without full re-render
+  // Update bubble and quick-done-btn without full re-render
   var totalDone = sets.filter(function(s){ return s.done; }).length;
   var rows = document.querySelectorAll(".ex-row");
   rows.forEach(function(row) {
     var nameEl = row.querySelector(".ex-name");
     if (!nameEl || nameEl.textContent !== ex) return;
     var bubble = row.querySelector(".ex-bubble");
-    if (!bubble) return;
-    bubble.textContent = totalDone + "/" + numSets;
-    bubble.classList.toggle("done", totalDone >= numSets);
+    if (bubble) {
+      bubble.textContent = totalDone + "/" + numSets;
+      bubble.classList.toggle("done", totalDone >= numSets);
+    }
+    var qdBtn = row.querySelector(".quick-done-btn");
+    if (qdBtn) qdBtn.classList.toggle("all-done", totalDone >= numSets);
   });
+  checkWeekComplete();
 }
 
 function saveModal() {
@@ -1068,5 +1163,13 @@ renderWorkout();
 
 
 </script>
+
+<div id="advance-overlay" class="advance-overlay" onclick="if(event.target===this)closeAdvance()">
+  <div id="advance-box" class="advance-box"></div>
+</div>
+
+<div id="advance-overlay" class="advance-overlay" onclick="if(event.target===this)closeAdvance()">
+  <div id="advance-box" class="advance-box"></div>
+</div>
 </body>
 </html>
