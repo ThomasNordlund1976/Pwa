@@ -450,6 +450,7 @@ var EX_TIMERS = {"Hack Squat": 180, "Barbell Row": 180, "Close Grip Pulldown": 1
 var DEFAULT_TIMER = 90;
 var timerRemaining = 0;
 var timerInterval = null;
+var timerEndTime = 0;
 var timerAudio = null;
 var curExName = "";
 var curNumSets = 0;
@@ -473,17 +474,15 @@ function loadTimerPref() {
 function startTimer() {
   stopTimer();
   timerRemaining = timerDuration;
+  timerEndTime = Date.now() + timerDuration * 1000;
   var bar = document.getElementById("timer-bar");
   if (bar) bar.classList.add("visible");
   updateTimerDisplay();
   timerInterval = setInterval(function() {
-    timerRemaining--;
+    timerRemaining = Math.max(0, Math.round((timerEndTime - Date.now()) / 1000));
     updateTimerDisplay();
-    if (timerRemaining <= 0) {
-      stopTimer();
-      timerDone();
-    }
-  }, 1000);
+    if (timerRemaining <= 0) { stopTimer(); timerDone(); }
+  }, 250);
 }
 
 function stopTimer() {
@@ -499,6 +498,8 @@ function timerDone() {
   var cd = document.getElementById("timer-countdown");
   if (cd) { cd.textContent = "GO!"; cd.classList.add("done"); }
   playBeep();
+  // Vibrate: three short pulses
+  if (navigator.vibrate) { navigator.vibrate([200, 100, 200, 100, 400]); }
   if (typeof Notification !== "undefined" && Notification.permission === "granted") {
     new Notification("Rest over!", { body: "Time to hit your next set.", icon: "/Pwa/icon-192.png" });
   }
@@ -1159,10 +1160,16 @@ function renderOverview() {
     '</div>';
 }
 
-renderWorkout();
 
-
-</script>
+document.addEventListener("visibilitychange", function() {
+  if (document.visibilityState === "visible" && timerInterval && timerEndTime > 0) {
+    timerRemaining = Math.max(0, Math.round((timerEndTime - Date.now()) / 1000));
+    updateTimerDisplay();
+    if (timerRemaining <= 0) { stopTimer(); timerDone(); }
+  }
+});
+try { var _sw = localStorage.getItem("hype14w_week"); if (_sw && +_sw >= 1 && +_sw <= WEEKS.length) curWeek = +_sw; } catch(e) {}
+renderWorkout();</script>
 
 <div id="advance-overlay" class="advance-overlay" onclick="if(event.target===this)closeAdvance()">
   <div id="advance-box" class="advance-box"></div>
