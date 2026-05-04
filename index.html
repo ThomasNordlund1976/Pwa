@@ -773,7 +773,7 @@ var days = "";
         lastStr = "Wk" + last.week + ": " + (maxKg > 0 ? maxKg + " kg" : "--");
       }
       var safeEx = encodeURIComponent(ex);
-      rows += '<div class="ex-row" data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\')">' +
+      rows += '<div class="ex-row" data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\',' + d + ')">' +
         '<div class="ex-info">' +
           '<div class="ex-name">' + ex + '</div>' +
           '<div class="ex-last' + (last ? " has" : "") + '">' + lastStr + '</div>' +
@@ -781,7 +781,7 @@ var days = "";
         '<div class="ex-right">' +
           '<div class="ex-rx">' + wk.sets + 'x' + wk.reps + '</div>' +
           '<div class="ex-bubble' + (isDone ? " done" : "") + '">' + done + '/' + wk.sets + '</div>' +
-          '<button class="quick-done-btn' + (isDone ? " all-done" : "") + '" onclick="event.stopPropagation();quickCompleteEx(\'' + safeEx + '\')" title="Mark all sets done">' +
+          '<button class="quick-done-btn' + (isDone ? " all-done" : "") + '" onclick="event.stopPropagation();quickCompleteEx(\'' + safeEx + '\',' + d + ',' + curWeek + ')" title="Mark all sets done">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
         '</div></div>';
@@ -818,6 +818,7 @@ var days = "";
 function openModal(safeEx, dayType, dayIdx) {
   var ex = decodeURIComponent(safeEx);
   curExName = ex;
+  curDayIdx = (dayIdx !== undefined) ? dayIdx : 0;
   timerDuration = (EX_TIMERS[ex] !== undefined) ? EX_TIMERS[ex] : DEFAULT_TIMER;
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
@@ -937,8 +938,8 @@ function saveModalSilent() {
   dbSet(db, curWeek, ex, {sets: sets, date: date});
   // Update bubble and quick-done-btn without full re-render
   var totalDone = sets.filter(function(s){ return s.done; }).length;
-  var safeExQ = encodeURIComponent(ex);
-  var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeExQ + "\"][data-day=\"" + (dayIdx!==undefined?dayIdx:0) + "\"][data-week=\"" + (weekNum!==undefined?weekNum:curWeek) + "\"]");
+  var safeEx2 = encodeURIComponent(ex);
+  var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeEx + "\"][data-day=\"" + curDayIdx + "\"][data-week=\"" + curWeek + "\"]");
   rows.forEach(function(row) {
     var bubble = row.querySelector(".ex-bubble");
     if (bubble) {
@@ -997,8 +998,8 @@ function quickCompleteEx(safeEx, dayIdx, weekNum) {
   dbSet(db, curWeek, ex, {sets: sets, date: date});
   // Silent update - just flip the bubble and quick-done-btn without re-rendering
   var totalDone = sets.filter(function(s){ return s.done; }).length;
-  var safeExQ = encodeURIComponent(ex);
-  var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeExQ + "\"][data-day=\"" + (dayIdx!==undefined?dayIdx:0) + "\"][data-week=\"" + (weekNum!==undefined?weekNum:curWeek) + "\"]");
+  var safeEx2 = encodeURIComponent(ex);
+  var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeEx2 + "\"][data-day=\"" + (dayIdx !== undefined ? dayIdx : curDayIdx) + "\"][data-week=\"" + (weekNum !== undefined ? weekNum : curWeek) + "\"]");
   rows.forEach(function(row) {
     var bubble = row.querySelector(".ex-bubble");
     if (bubble) {
