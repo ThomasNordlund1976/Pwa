@@ -938,7 +938,7 @@ function saveModalSilent() {
   dbSet(db, curWeek, ex, {sets: sets, date: date});
   // Update bubble and quick-done-btn without full re-render
   var totalDone = sets.filter(function(s){ return s.done; }).length;
-  var safeEx2 = encodeURIComponent(ex);
+  var safeEx = encodeURIComponent(ex);
   var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeEx + "\"][data-day=\"" + curDayIdx + "\"][data-week=\"" + curWeek + "\"]");
   rows.forEach(function(row) {
     var bubble = row.querySelector(".ex-bubble");
