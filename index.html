@@ -322,7 +322,7 @@ var EX_INFO = {
   "Barbell RDL":                 {muscle:"Hamstrings / Glutes / Erectors", exec:"Hip-width stance, soft knees. Hinge at hips pushing them back, bar stays close to legs. Lower to mid-shin or when hamstrings are fully stretched. Drive hips forward to return.", tips:["This is a hip hinge - not a squat","Feel the hamstring stretch at the bottom","Keep bar dragging up your shins/thighs","Do not round the lower back"]},
   "Leg Press":                   {muscle:"Quads / Glutes / Hamstrings", exec:"Feet shoulder width on platform. Lower sled until knees reach 90 degrees or less. Press back to near lockout without locking knees.", tips:["Do not lock knees at the top","High feet = more glutes and hams. Low = more quads","Control the descent - do not bounce","Keep lower back pressed against pad"]},
   "Hamstring Curl":              {muscle:"Hamstrings", exec:"Lie prone, pad behind ankles. Curl heels toward glutes as far as possible. Squeeze for 1 second. Lower with full control over 3 seconds.", tips:["Plantar flex feet (point toes) for more hamstring activation","Full range of motion - heels to glutes","Slow 3-second eccentric is critical here","Do not let hips rise off the pad"]},
-  "Walking Lunges":              {muscle:"Quads / Glutes / Hamstrings", exec:"Step forward, lower back knee toward floor, front shin stays vertical. Drive through front heel to stand. Alternate legs walking forward.", tips:["Keep torso upright throughout","Front knee tracks over toes - not caving in","Full depth - back knee just above floor","Take long strides for more glute emphasis"]},
+  "DB Bulgarian Split Squat":              {muscle:"Quads / Glutes / Hamstrings", exec:"Step forward, lower back knee toward floor, front shin stays vertical. Drive through front heel to stand. Alternate legs walking forward.", tips:["Keep torso upright throughout","Front knee tracks over toes - not caving in","Full depth - back knee just above floor","Take long strides for more glute emphasis"]},
   "Standing Calf Raises":        {muscle:"Gastrocnemius / Soleus", exec:"Stand on edge of step or calf raise machine. Lower heels fully below platform. Drive up as high as possible. Pause at top. Lower slowly.", tips:["Full stretch at the bottom is non-negotiable","Pause 1 second at peak contraction","Do not bounce at the bottom","Straight knees = gastrocnemius. Bent knees = soleus"]},
   "Seated Machine Lateral Raise":{muscle:"Side Delts", exec:"Sit in machine, pads on forearms or wrists. Raise arms to shoulder height. Squeeze side delts at top. Slow controlled descent.", tips:["Machine version allows constant tension","Stop at shoulder height","Control the negative - do not let it drop","Great finisher to pre-exhaust delts"]},
   "Seated Barbell Shoulder Press":{muscle:"Front + Side Delts / Triceps", exec:"Seated, bar in front at chin. Press overhead to near lockout. Lower to chin level under control. Keep core tight.", tips:["Bar path should be slightly forward - not straight up","Do not crash bar into clavicle","Keep core braced and back against pad","Slightly wider than shoulder grip works well"]},
@@ -357,7 +357,7 @@ var MW_LINKS = {
   "Barbell RDL": "barbell-romanian-deadlift",
   "Leg Press": "machine-horizontal-leg-press",
   "Hamstring Curl": "machine-lying-leg-curl",
-  "Walking Lunges": "dumbbell-walking-lunge",
+  "DB Bulgarian Split Squat": "dumbbell-walking-lunge",
   "Standing Calf Raises": "machine-standing-calf-raises",
   "Seated Machine Lateral Raise": "machine-lateral-raise",
   "Seated Barbell Shoulder Press": "barbell-overhead-press",
@@ -391,7 +391,7 @@ var YT_LINKS = {
   "Barbell RDL": "barbell Romanian deadlift tutorial form",
   "Leg Press": "leg press machine tutorial form",
   "Hamstring Curl": "lying leg curl hamstring tutorial",
-  "Walking Lunges": "walking lunges tutorial form",
+  "DB Bulgarian Split Squat": "walking lunges tutorial form",
   "Standing Calf Raises": "standing calf raise tutorial",
   "Seated Machine Lateral Raise": "machine lateral raise shoulder tutorial",
   "Seated Barbell Shoulder Press": "seated barbell overhead press tutorial",
@@ -446,7 +446,7 @@ function closeExInfo() { document.getElementById("ex-info-overlay").classList.re
 
 
 var timerDuration = 120;
-var EX_TIMERS = {"Hack Squat": 180, "Barbell Row": 180, "Close Grip Pulldown": 180, "Weighted Dip": 180, "Wide Grip Cable Row": 180, "Chest Supported Machine Row": 180, "Single Arm DB Row": 180, "Flat Smith Machine Press": 180, "Seated DB Shoulder Press": 180, "Walking Lunges": 180, "Seated Barbell Shoulder Press": 180, "Barbell RDL": 180, "Incline Barbell Press": 180, "Seated Chest Machine Press": 180, "Leg Press": 180, "Straight Bar Lat Pulldown": 180, "DB Skull Crush": 120, "Seated Machine Lateral Raise": 120, "Quad Extension": 120, "CS DB Lateral Raises": 120, "Hamstring Curl": 120, "Overhead Rope Extensions": 120, "DB Hammer Curls": 120, "Standing Calf Raises": 120, "Incline DB Curls": 120, "EZ Bar Tricep Extensions": 120, "Seated DB Lateral Raise": 120};
+var EX_TIMERS = {"Hack Squat": 180, "Barbell Row": 180, "Close Grip Pulldown": 180, "Weighted Dip": 180, "Wide Grip Cable Row": 180, "Chest Supported Machine Row": 180, "Single Arm DB Row": 180, "Flat Smith Machine Press": 180, "Seated DB Shoulder Press": 180, "DB Bulgarian Split Squat": 180, "Seated Barbell Shoulder Press": 180, "Barbell RDL": 180, "Incline Barbell Press": 180, "Seated Chest Machine Press": 180, "Leg Press": 180, "Straight Bar Lat Pulldown": 180, "DB Skull Crush": 120, "Seated Machine Lateral Raise": 120, "Quad Extension": 120, "CS DB Lateral Raises": 120, "Hamstring Curl": 120, "Overhead Rope Extensions": 120, "DB Hammer Curls": 120, "Standing Calf Raises": 120, "Incline DB Curls": 120, "EZ Bar Tricep Extensions": 120, "Seated DB Lateral Raise": 120};
 var DEFAULT_TIMER = 90;
 var timerRemaining = 0;
 var timerInterval = null;
@@ -561,7 +561,7 @@ function requestNotifPermission() {
 var SPLIT = [
   {day:"Monday",    type:"push",  label:"PUSH",         sub:"Chest / Shoulders / Triceps", ex:["Seated DB Lateral Raise","Incline Barbell Press","Seated DB Shoulder Press","Seated Chest Machine Press","High to Low Cable Flye","Overhead Rope Extensions","Weighted Dip"]},
   {day:"Tuesday",   type:"pull",  label:"PULL",         sub:"Back / Rear Delts / Biceps",  ex:["Chest Supported Machine Row","Straight Bar Lat Pulldown","Wide Grip Cable Row","Cable Rear Delt Flyes","DB Hammer Curls","High Cable Curls"]},
-  {day:"Wednesday", type:"lower", label:"LOWER",        sub:"Quads / Hamstrings / Glutes", ex:["Quad Extension","Hack Squat","Barbell RDL","Leg Press","Hamstring Curl","Walking Lunges","Standing Calf Raises"]},
+  {day:"Wednesday", type:"lower", label:"LOWER",        sub:"Quads / Hamstrings / Glutes", ex:["Quad Extension","Hack Squat","Barbell RDL","Leg Press","Hamstring Curl","DB Bulgarian Split Squat","Standing Calf Raises"]},
   {day:"Thursday",  type:"rest",  label:"REST",         sub:"Recovery", ex:[]},
   {day:"Friday",    type:"delts", label:"DELTS + ARMS", sub:"Shoulders / Triceps / Biceps", ex:["Seated Machine Lateral Raise","Seated Barbell Shoulder Press","CS DB Lateral Raises","Rope Face Pulls","EZ Bar Tricep Extensions","Incline DB Curls","DB Skull Crush"]},
   {day:"Saturday",  type:"cb",    label:"CHEST + BACK", sub:"Chest / Back", ex:["Close Grip Pulldown","Flat Smith Machine Press","Single Arm DB Row","Incline Barbell Press","Barbell Row","Pec Dec Flye"]},
@@ -606,14 +606,14 @@ var curWeek = 1;
 
 function dbLoad() { try { return JSON.parse(localStorage.getItem("hype14w") || "{}"); } catch(e) { return {}; } }
 function dbSave(db) { try { localStorage.setItem("hype14w", JSON.stringify(db)); } catch(e) {} }
-function dbKey(w, ex) { return "w" + w + "_" + ex; }
-function dbGet(db, w, ex) { return db[dbKey(w, ex)] || null; }
-function dbSet(db, w, ex, val) { db[dbKey(w, ex)] = val; dbSave(db); }
+function dbKey(w, ex, d) { return "w" + w + (d !== undefined ? "_d" + d : "") + "_" + ex; }
+function dbGet(db, w, ex, d) { return db[dbKey(w, ex, d)] || null; }
+function dbSet(db, w, ex, val, d) { db[dbKey(w, ex, d)] = val; dbSave(db); }
 
-function getHistory(db, ex) {
+function getHistory(db, ex, d) {
   var out = [];
   for (var w = 1; w <= 14; w++) {
-    var d = dbGet(db, w, ex);
+    var d = dbGet(db, w, ex, d);
     if (d && d.sets) {
       var hasSets = false;
       for (var i = 0; i < d.sets.length; i++) { if (d.sets[i].kg || d.sets[i].reps) { hasSets = true; break; } }
@@ -622,12 +622,12 @@ function getHistory(db, ex) {
   }
   return out;
 }
-function getLastPerf(db, week, ex) {
+function getLastPerf(db, week, ex, dayIdx) {
   for (var w = week - 1; w >= 1; w--) {
-    var d = dbGet(db, w, ex);
-    if (d && d.sets) {
+    var entry = dbGet(db, w, ex, dayIdx);
+    if (entry && entry.sets) {
       var done = [];
-      for (var i = 0; i < d.sets.length; i++) { if (d.sets[i].kg || d.sets[i].reps) done.push(d.sets[i]); }
+      for (var i = 0; i < entry.sets.length; i++) { if (entry.sets[i].kg || entry.sets[i].reps) done.push(entry.sets[i]); }
       if (done.length) return {week:w, sets:done};
     }
   }
@@ -645,10 +645,10 @@ function g(id) { return document.getElementById(id); }
 
 function checkWeekComplete() {
   var db = dbLoad(); var wk = WEEKS[curWeek-1]; if (!wk) return;
-  var allEx = [];
-  for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allEx.push(SPLIT[di].ex[ei]); }
-  if (!allEx.length) return;
-  if (!allEx.every(function(ex){ return getDone(db,curWeek,ex) >= wk.sets; })) return;
+  var allExDay = [];
+    for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allExDay.push({ex: SPLIT[di].ex[ei], di: di}); }
+  if (!allExDay.length) return;
+  if (!allExDay.every(function(item){ return getDone(db, curWeek, item.ex, item.di) >= wk.sets; })) return;
   var ack = "hype14w_ack";
   try { if (localStorage.getItem(ack) === String(curWeek)) return; } catch(e) {}
   setTimeout(function() {
@@ -748,7 +748,7 @@ function renderWorkout() {
   // Check if week is complete
 var allEx = [];
 for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allEx.push(SPLIT[di].ex[ei]); }
-var weekDone = allEx.every(function(ex) { return getDone(db, curWeek, ex) >= wk.sets; });
+var weekDone = allEx.every(function(ex) { return getDone(db, curWeek, ex, d) >= wk.sets; });
 var days = "";
   for (var d = 0; d < SPLIT.length; d++) {
     var day = SPLIT[d];
@@ -763,9 +763,9 @@ var days = "";
     var rows = "";
     for (var e = 0; e < day.ex.length; e++) {
       var ex = day.ex[e];
-      var done = getDone(db, curWeek, ex);
+      var done = getDone(db, curWeek, ex, d);
       var isDone = done >= wk.sets;
-      var last = getLastPerf(db, curWeek, ex);
+      var last = getLastPerf(db, curWeek, ex, d);
       var lastStr = "No previous data";
       if (last && last.sets.length) {
         var maxKg = 0;
@@ -823,9 +823,9 @@ function openModal(safeEx, dayType, dayIdx) {
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
   curNumSets = wk.sets;
-  var existing = dbGet(db, curWeek, ex);
-  var history  = getHistory(db, ex);
-  var last     = getLastPerf(db, curWeek, ex);
+  var existing = dbGet(db, curWeek, ex, curDayIdx);
+  var history  = getHistory(db, ex, curDayIdx);
+  var last     = getLastPerf(db, curWeek, ex, dayIdx);
   var suggestKg = 0;
   if (last && last.sets.length) {
     for (var s = 0; s < last.sets.length; s++) { if (last.sets[s].kg && +last.sets[s].kg > suggestKg) suggestKg = +last.sets[s].kg; }
@@ -935,11 +935,10 @@ function saveModalSilent() {
   }
   var now = new Date();
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
-  dbSet(db, curWeek, ex, {sets: sets, date: date});
+  dbSet(db, curWeek, ex, {sets: sets, date: date}, curDayIdx);
   // Update bubble and quick-done-btn without full re-render
   var totalDone = sets.filter(function(s){ return s.done; }).length;
   var safeEx = encodeURIComponent(ex);
-  console.log("saveModalSilent: ex=" + ex + " curDayIdx=" + curDayIdx + " curWeek=" + curWeek + " safeEx=" + safeEx);
   var rows = document.querySelectorAll(".ex-row[data-ex=\"" + safeEx + "\"][data-day=\"" + curDayIdx + "\"][data-week=\"" + curWeek + "\"]");
   rows.forEach(function(row) {
     var bubble = row.querySelector(".ex-bubble");
@@ -970,16 +969,17 @@ function saveModal() {
   }
   var now = new Date();
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
-  dbSet(db, curWeek, ex, {sets:sets, date:date});
+  dbSet(db, curWeek, ex, {sets:sets, date:date}, curDayIdx);
   closeModal();
   renderWorkout();
 }
 
 function quickCompleteEx(safeEx, dayIdx, weekNum) {
   var ex = decodeURIComponent(safeEx);
+  var dIdx = dayIdx !== undefined ? dayIdx : curDayIdx;
   var db = dbLoad();
   var wk = WEEKS[curWeek - 1];
-  var existing = dbGet(db, curWeek, ex);
+  var existing = dbGet(db, curWeek, ex, dIdx);
   var now = new Date();
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
 
@@ -988,7 +988,7 @@ function quickCompleteEx(safeEx, dayIdx, weekNum) {
                 existing.sets.every(function(s){ return s.done; });
 
   var sets = [];
-  var last = getLastPerf(db, curWeek, ex);
+  var last = getLastPerf(db, curWeek, ex, dIdx);
   for (var i = 0; i < wk.sets; i++) {
     var existSet = existing && existing.sets && existing.sets[i] ? existing.sets[i] : null;
     var lastSet  = last && last.sets && last.sets[i] ? last.sets[i] : null;
@@ -996,7 +996,7 @@ function quickCompleteEx(safeEx, dayIdx, weekNum) {
     var reps = existSet && existSet.reps ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
     sets.push({kg: kg, reps: reps, done: !allDone});
   }
-  dbSet(db, curWeek, ex, {sets: sets, date: date});
+  dbSet(db, curWeek, ex, {sets: sets, date: date}, dIdx);
   // Silent update - just flip the bubble and quick-done-btn without re-rendering
   var totalDone = sets.filter(function(s){ return s.done; }).length;
   var safeEx2 = encodeURIComponent(ex);
@@ -1021,8 +1021,8 @@ function markDayDone(dayIdx) {
   var date = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
   for (var e = 0; e < day.ex.length; e++) {
     var ex = day.ex[e];
-    var existing = dbGet(db, curWeek, ex);
-    var last = getLastPerf(db, curWeek, ex);
+    var existing = dbGet(db, curWeek, ex, dayIdx);
+    var last = getLastPerf(db, curWeek, ex, dayIdx);
     var allDone = existing && existing.sets && existing.sets.every(function(s){ return s.done; });
     if (allDone) continue;
     var sets = [];
@@ -1033,7 +1033,7 @@ function markDayDone(dayIdx) {
       var reps = (existSet && existSet.reps) ? existSet.reps : (lastSet && lastSet.reps ? lastSet.reps : wk.reps.split("-")[0]);
       sets.push({kg: kg, reps: reps, done: true});
     }
-    dbSet(db, curWeek, ex, {sets: sets, date: date});
+    dbSet(db, curWeek, ex, {sets: sets, date: date}, dayIdx);
   }
   renderWorkout();
 }
