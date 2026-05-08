@@ -610,14 +610,14 @@ function dbKey(w, ex, d) { return "w" + w + (d !== undefined ? "_d" + d : "") + 
 function dbGet(db, w, ex, d) { return db[dbKey(w, ex, d)] || null; }
 function dbSet(db, w, ex, val, d) { db[dbKey(w, ex, d)] = val; dbSave(db); }
 
-function getHistory(db, ex, d) {
+function getHistory(db, ex, dayIdx) {
   var out = [];
   for (var w = 1; w <= 14; w++) {
-    var d = dbGet(db, w, ex, d);
-    if (d && d.sets) {
+    var rec = dbGet(db, w, ex, dayIdx);
+    if (rec && rec.sets) {
       var hasSets = false;
-      for (var i = 0; i < d.sets.length; i++) { if (d.sets[i].kg || d.sets[i].reps) { hasSets = true; break; } }
-      if (hasSets) out.push({week:w, sets:d.sets, date:d.date||""});
+      for (var i = 0; i < rec.sets.length; i++) { if (rec.sets[i].kg || rec.sets[i].reps) { hasSets = true; break; } }
+      if (hasSets) out.push({week:w, sets:rec.sets, date:rec.date||""});
     }
   }
   return out;
