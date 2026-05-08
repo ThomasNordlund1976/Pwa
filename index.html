@@ -633,8 +633,8 @@ function getLastPerf(db, week, ex, dayIdx) {
   }
   return null;
 }
-function getDone(db, week, ex) {
-  var d = dbGet(db, week, ex);
+function getDone(db, week, ex, d) {
+  var d = dbGet(db, week, ex, d);
   if (!d || !d.sets) return 0;
   var c = 0;
   for (var i = 0; i < d.sets.length; i++) { if (d.sets[i].done) c++; }
@@ -786,7 +786,7 @@ var days = "";
           '</button>' +
         '</div></div>';
     }
-    var dayAllDone = day.ex.length > 0 && day.ex.every(function(exName){ return getDone(db, curWeek, exName) >= wk.sets; });
+    var dayAllDone = day.ex.length > 0 && day.ex.every(function(exName){ return getDone(db, curWeek, exName, d) >= wk.sets; });
     days += '<div class="day-section">' +
       '<div class="day-header t-' + day.type + '">' +
         '<div class="day-dot"></div>' +
