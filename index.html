@@ -294,14 +294,6 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 <script>
 
-window.onerror = function(msg, src, line, col, err) {
-  var div = document.createElement("div");
-  div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#ff0044;color:#fff;font-family:monospace;font-size:12px;padding:12px;z-index:9999;word-break:break-all;white-space:pre-wrap";
-  div.textContent = "ERROR: " + msg + "\nLine: " + line + " Col: " + col + "\nSrc: " + src + "\n" + (err ? err.stack : "");
-  document.body.appendChild(div);
-  return false;
-};
-
 
 var EX_INFO = {
   "Seated DB Lateral Raise":     {muscle:"Side Delts", exec:"Sit upright, dumbbells at sides. Raise arms out to shoulder height with a slight forward lean and thumbs slightly down. Control the descent.", tips:["Lead with elbows, not wrists","Stop at shoulder height - going higher shifts load to traps","Keep a slight bend in the elbows throughout","Slow the negative down to 2-3 seconds"]},
@@ -1052,7 +1044,7 @@ function renderProgress() {
       var day = SPLIT[d];
       for (var e = 0; e < day.ex.length; e++) {
         var ex = day.ex[e];
-        var data = dbGet(db, w, ex);
+        var data = dbGet(db, w, ex, d);
         if (data && data.sets) {
           var hasDone = false;
           for (var si = 0; si < data.sets.length; si++) {
