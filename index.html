@@ -245,6 +245,19 @@ input[type=number] { -moz-appearance: textfield; }
 .advance-actions { display:flex;flex-direction:column;gap:10px; }
 .btn-accent { background:var(--accent);color:#0a0a0c;border:none; }
 .btn-warn { background:var(--red);color:#fff;border:none; }
+
+.day-timer { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.day-elapsed { font-family:'DM Mono',monospace; font-size:13px; color:var(--accent); min-width:42px; text-align:right; }
+.day-elapsed.inactive { color:var(--text3); }
+.session-btn { padding:4px 10px; border-radius:20px; border:1px solid var(--border2); background:transparent; color:var(--text3); font-family:'DM Mono',monospace; font-size:10px; font-weight:500; cursor:pointer; -webkit-appearance:none; appearance:none; white-space:nowrap; }
+.session-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+.skip-btn { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border2); background:transparent; color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px; -webkit-appearance:none; appearance:none; }
+.skip-btn.skipped { background:rgba(255,100,100,0.15); border-color:#ff6464; color:#ff6464; }
+.ex-row.skipped { opacity:0.45; }
+.ex-row.skipped .ex-name { text-decoration:line-through; }
+.skip-day-btn { padding:4px 10px; border-radius:20px; border:1px solid var(--border2); background:transparent; color:var(--text3); font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; -webkit-appearance:none; appearance:none; white-space:nowrap; }
+.skip-day-btn.skipped { background:rgba(255,100,100,0.15); border-color:#ff6464; color:#ff6464; }
+
 </style>
 </head>
 <body>
@@ -640,7 +653,7 @@ function checkWeekComplete() {
   var allExDay = [];
     for (var di = 0; di < SPLIT.length; di++) { for (var ei = 0; ei < SPLIT[di].ex.length; ei++) allExDay.push({ex: SPLIT[di].ex[ei], di: di}); }
   if (!allExDay.length) return;
-  if (!allExDay.every(function(item){ return getDone(db, curWeek, item.ex, item.di) >= wk.sets; })) return;
+  if (!allExDay.every(function(item){ var itemData = dbGet(db, curWeek, item.ex, item.di); return (itemData && itemData.skipped) || getDone(db, curWeek, item.ex, item.di) >= wk.sets; })) return;
   var ack = "hype14w_ack";
   try { if (localStorage.getItem(ack) === String(curWeek)) return; } catch(e) {}
   setTimeout(function() {
@@ -703,6 +716,146 @@ function restartProgram() {
 
 function closeAdvance() { document.getElementById("advance-overlay").classList.remove("open"); }
 
+
+var sessionTimers = {};
+
+function sessionKey(w, d) { return 'sess_' + w + '_' + d; }
+
+function loadSession(w, d) {
+  try {
+    var raw = localStorage.getItem(sessionKey(w, d));
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveSession(w, d, data) {
+  try { localStorage.setItem(sessionKey(w, d), JSON.stringify(data)); } catch(e) {}
+}
+
+function startSession(d) {
+  var key = curWeek + '_' + d;
+  var sess = loadSession(curWeek, d) || {};
+  if (sess.active) return; // already running
+  sess.active = true;
+  sess.startTs = Date.now();
+  sess.elapsed = sess.elapsed || 0;
+  saveSession(curWeek, d, sess);
+  sessionTimers[key] = setInterval(function() { updateSessionDisplay(d); }, 1000);
+  updateSessionDisplay(d);
+}
+
+function stopSession(d) {
+  var key = curWeek + '_' + d;
+  var sess = loadSession(curWeek, d) || {};
+  if (!sess.active) return;
+  sess.elapsed = (sess.elapsed || 0) + Math.floor((Date.now() - sess.startTs) / 1000);
+  sess.active = false;
+  sess.startTs = null;
+  saveSession(curWeek, d, sess);
+  if (sessionTimers[key]) { clearInterval(sessionTimers[key]); delete sessionTimers[key]; }
+  updateSessionDisplay(d);
+  // Ask if day should be marked done
+  showSessionDonePrompt(d, sess.elapsed);
+}
+
+function getSessionElapsed(w, d) {
+  var sess = loadSession(w, d);
+  if (!sess) return 0;
+  var base = sess.elapsed || 0;
+  if (sess.active && sess.startTs) base += Math.floor((Date.now() - sess.startTs) / 1000);
+  return base;
+}
+
+function formatElapsed(secs) {
+  var h = Math.floor(secs / 3600);
+  var m = Math.floor((secs % 3600) / 60);
+  var s = secs % 60;
+  if (h > 0) return h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  return m + ':' + String(s).padStart(2,'0');
+}
+
+function updateSessionDisplay(d) {
+  var elapsedEl = document.getElementById('sess-elapsed-' + d);
+  var btnEl = document.getElementById('sess-btn-' + d);
+  if (!elapsedEl || !btnEl) return;
+  var sess = loadSession(curWeek, d);
+  var active = sess && sess.active;
+  var secs = getSessionElapsed(curWeek, d);
+  if (secs > 0 || active) {
+    elapsedEl.textContent = formatElapsed(secs);
+    elapsedEl.className = 'day-elapsed' + (active ? '' : ' inactive');
+  } else {
+    elapsedEl.textContent = '';
+  }
+  btnEl.textContent = active ? 'Stop' : (secs > 0 ? 'Resume' : 'Start');
+  btnEl.className = 'session-btn' + (active ? ' active' : '');
+}
+
+function showSessionDonePrompt(d, elapsed) {
+  var box = document.getElementById('advance-box');
+  var timeStr = formatElapsed(elapsed);
+  box.innerHTML =
+    '<div class="advance-icon">⏱</div>' +
+    '<div class="advance-title">Session Done?</div>' +
+    '<div class="advance-sub">Session time: <span style="color:var(--accent)">' + timeStr + '</span><br>Mark the whole day as complete?</div>' +
+    '<div class="advance-actions">' +
+    '<button class="btn btn-accent" onclick="markDayDone(' + d + ');closeAdvance()">Mark Day Done</button>' +
+    '<button class="btn btn-ghost" onclick="closeAdvance()">Not Yet</button>' +
+    '</div>';
+  document.getElementById('advance-overlay').classList.add('open');
+}
+
+function resumeActiveSessions() {
+  // On app load, restart intervals for any active sessions
+  for (var d = 0; d < SPLIT.length; d++) {
+    var sess = loadSession(curWeek, d);
+    if (sess && sess.active) {
+      (function(dayIdx) {
+        var key = curWeek + '_' + dayIdx;
+        sessionTimers[key] = setInterval(function() { updateSessionDisplay(dayIdx); }, 1000);
+      })(d);
+    }
+  }
+}
+
+function skipExercise(safeEx, d, weekNum) {
+  var ex = decodeURIComponent(safeEx);
+  var db = dbLoad();
+  var existing = dbGet(db, weekNum, ex, d);
+  var isSkipped = existing && existing.skipped;
+  if (isSkipped) {
+    // Unskip
+    if (existing) { existing.skipped = false; dbSet(db, weekNum, ex, existing, d); }
+  } else {
+    // Skip - store with skipped flag, preserve any existing sets
+    var data = existing || {sets: [], date: ''};
+    data.skipped = true;
+    var now = new Date();
+    data.date = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+    dbSet(db, weekNum, ex, data, d);
+  }
+  renderWorkout();
+}
+
+function skipDay(d) {
+  var db = dbLoad();
+  var day = SPLIT[d];
+  var now = new Date();
+  var date = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  // Check if all already skipped
+  var allSkipped = day.ex.every(function(ex) {
+    var existing = dbGet(db, curWeek, ex, d);
+    return existing && existing.skipped;
+  });
+  day.ex.forEach(function(ex) {
+    var existing = dbGet(db, curWeek, ex, d) || {sets: []};
+    existing.skipped = !allSkipped;
+    existing.date = date;
+    dbSet(db, curWeek, ex, existing, d);
+  });
+  renderWorkout();
+}
+
 function setTab(tab) {
   curTab = tab;
   ["workout","progress","overview"].forEach(function(t) {
@@ -735,6 +888,7 @@ function renderWorkout() {
       '<div class="wb-stat"><div class="wb-val">' + wk.sets + '</div><div class="wb-lbl">Sets</div></div>' +
       '<div class="wb-stat"><div class="wb-val">' + wk.reps + '</div><div class="wb-lbl">Reps</div></div>' +
       '<div class="wb-stat"><div class="wb-val">' + wk.rir.split(" ")[0] + '</div><div class="wb-lbl">RIR</div></div>' +
+     '<button class="skip-btn' + (isSkipped ? ' skipped' : '') + '"' + ' data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '"' + ' onclick="event.stopPropagation();var b=this;skipExercise(b.dataset.ex,+b.dataset.day,+b.dataset.week)"' + ' title="Skip">&#8594;</button>' +
     '</div></div>';
 
   // Check if week is complete
@@ -765,7 +919,7 @@ var days = "";
         lastStr = "Wk" + last.week + ": " + (maxKg > 0 ? maxKg + " kg" : "--");
       }
       var safeEx = encodeURIComponent(ex);
-      rows += '<div class="ex-row" data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\',' + d + ')">' +
+      rows += '<div class="ex-row" + (isSkipped ? " skipped" : "") + " data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\',' + d + ')">' +
         '<div class="ex-info">' +
           '<div class="ex-name">' + ex + '</div>' +
           '<div class="ex-last' + (last ? " has" : "") + '">' + lastStr + '</div>' +
@@ -785,7 +939,15 @@ var days = "";
         '<div class="day-day">' + day.day.toUpperCase() + '</div>' +
         '<div class="day-type">' + day.label + '</div>' +
         '<div class="day-sub">' + day.sub + '</div>' +
+        '<button class="skip-day-btn' + (day.ex.length > 0 && day.ex.every(function(ex2){ var ex2d=dbGet(db,curWeek,ex2,d); return ex2d&&ex2d.skipped; }) ? ' skipped' : '') + '"' +
+        ' onclick="event.stopPropagation();skipDay(' + d + ')">' +
+        (day.ex.length > 0 && day.ex.every(function(ex2){ var ex2d=dbGet(db,curWeek,ex2,d); return ex2d&&ex2d.skipped; }) ? 'Skipped' : 'Skip day') +
+        '</button>' +
         '<button class="day-done-btn' + (dayAllDone ? " done" : "") + '" onclick="event.stopPropagation();markDayDone(' + d + ')" title="Mark whole day done">' + (dayAllDone ? "Day done" : "Mark done") + '</button>' +
+        '<span class="day-elapsed inactive" id="sess-elapsed-' + d + '"></span>' +
+        '<button class="session-btn" id="sess-btn-' + d + '"' +
+        ' onclick="event.stopPropagation();(loadSession(curWeek,' + d + ')&&loadSession(curWeek,' + d + ').active)?stopSession(' + d + '):startSession(' + d + ')">' +
+        'Start</button>' +
       '</div>' +
       '<div class="ex-list">' + rows + '</div></div>';
   }
@@ -1161,6 +1323,7 @@ document.addEventListener("visibilitychange", function() {
     if (timerRemaining <= 0) { stopTimer(); timerDone(); }
   }
 });
+resumeActiveSessions();
 try { var _sw = localStorage.getItem("hype14w_week"); if (_sw && +_sw >= 1 && +_sw <= WEEKS.length) curWeek = +_sw; } catch(e) {}
 renderWorkout();</script>
 
