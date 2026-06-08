@@ -306,6 +306,13 @@ input[type=number] { -moz-appearance: textfield; }
   </div>
 </div>
 <script>
+window.onerror = function(msg, src, line, col, err) {
+  var div = document.createElement("div");
+  div.style.cssText = "position:fixed;top:0;left:0;right:0;background:#ff0044;color:#fff;font-family:monospace;font-size:11px;padding:10px;z-index:9999;word-break:break-all;white-space:pre-wrap";
+  div.textContent = "ERR: " + msg + " L:" + line + " C:" + col + "\n" + (err ? err.stack : "");
+  document.body.appendChild(div);
+  return false;
+};
 
 
 var EX_INFO = {
@@ -888,7 +895,6 @@ function renderWorkout() {
       '<div class="wb-stat"><div class="wb-val">' + wk.sets + '</div><div class="wb-lbl">Sets</div></div>' +
       '<div class="wb-stat"><div class="wb-val">' + wk.reps + '</div><div class="wb-lbl">Reps</div></div>' +
       '<div class="wb-stat"><div class="wb-val">' + wk.rir.split(" ")[0] + '</div><div class="wb-lbl">RIR</div></div>' +
-     '<button class="skip-btn' + (isSkipped ? ' skipped' : '') + '"' + ' data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '"' + ' onclick="event.stopPropagation();var b=this;skipExercise(b.dataset.ex,+b.dataset.day,+b.dataset.week)"' + ' title="Skip">&#8594;</button>' +
     '</div></div>';
 
   // Check if week is complete
@@ -919,7 +925,9 @@ var days = "";
         lastStr = "Wk" + last.week + ": " + (maxKg > 0 ? maxKg + " kg" : "--");
       }
       var safeEx = encodeURIComponent(ex);
-      rows += '<div class="ex-row" + (isSkipped ? " skipped" : "") + " data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\',' + d + ')">' +
+      var exData = dbGet(db, curWeek, ex, d);
+      var isSkipped = exData && exData.skipped;
+      rows += '<div class="' + (isSkipped ? 'ex-row skipped' : 'ex-row') + '" data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '" onclick="openModal(\'' + safeEx + '\',\'' + day.type + '\',' + d + ')">' +
         '<div class="ex-info">' +
           '<div class="ex-name">' + ex + '</div>' +
           '<div class="ex-last' + (last ? " has" : "") + '">' + lastStr + '</div>' +
@@ -930,18 +938,20 @@ var days = "";
           '<button class="quick-done-btn' + (isDone ? " all-done" : "") + '" onclick="event.stopPropagation();quickCompleteEx(\'' + safeEx + '\',' + d + ',' + curWeek + ')" title="Mark all sets done">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
+      '<button class="skip-btn' + (isSkipped ? ' skipped' : '') + '"' + ' data-ex="' + safeEx + '" data-day="' + d + '" data-week="' + curWeek + '"' + ' onclick="event.stopPropagation();var b=this;skipExercise(b.dataset.ex,+b.dataset.day,+b.dataset.week)"' + ' title="Skip">&#8594;</button>' +
         '</div></div>';
     }
     var dayAllDone = day.ex.length > 0 && day.ex.every(function(exName){ return getDone(db, curWeek, exName, d) >= wk.sets; });
+    var dayAllSkipped = day.ex.length > 0 && day.ex.every(function(exName){ var ed = dbGet(db, curWeek, exName, d); return ed && ed.skipped; });
     days += '<div class="day-section">' +
       '<div class="day-header t-' + day.type + '">' +
         '<div class="day-dot"></div>' +
         '<div class="day-day">' + day.day.toUpperCase() + '</div>' +
         '<div class="day-type">' + day.label + '</div>' +
         '<div class="day-sub">' + day.sub + '</div>' +
-        '<button class="skip-day-btn' + (day.ex.length > 0 && day.ex.every(function(ex2){ var ex2d=dbGet(db,curWeek,ex2,d); return ex2d&&ex2d.skipped; }) ? ' skipped' : '') + '"' +
+        '<button class="skip-day-btn' + (dayAllSkipped ? ' skipped' : '') + '"' +
         ' onclick="event.stopPropagation();skipDay(' + d + ')">' +
-        (day.ex.length > 0 && day.ex.every(function(ex2){ var ex2d=dbGet(db,curWeek,ex2,d); return ex2d&&ex2d.skipped; }) ? 'Skipped' : 'Skip day') +
+        (dayAllSkipped ? 'Skipped' : 'Skip day') +
         '</button>' +
         '<button class="day-done-btn' + (dayAllDone ? " done" : "") + '" onclick="event.stopPropagation();markDayDone(' + d + ')" title="Mark whole day done">' + (dayAllDone ? "Day done" : "Mark done") + '</button>' +
         '<span class="day-elapsed inactive" id="sess-elapsed-' + d + '"></span>' +
