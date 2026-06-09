@@ -73,7 +73,9 @@ nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); bor
 .p-peak .wb-phase, .p-peak .wb-val { color: #ff4d72; }
 .coach-note { margin: 0 16px 16px; padding: 12px 14px; background: var(--surface); border-radius: var(--radius-sm); border-left: 3px solid var(--accent); font-size: 12px; color: var(--text2); line-height: 1.65; font-weight: 300; }
 .day-section { margin: 0 16px 14px; }
-.day-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius) var(--radius) 0 0; border: 1px solid var(--border); border-bottom: none; }
+.day-header { display: flex; flex-direction: column; gap: 0; padding: 10px 14px 8px; border-radius: var(--radius) var(--radius) 0 0; border: 1px solid var(--border); border-bottom: none; }
+.day-header-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.day-header-actions { display: flex; align-items: center; gap: 6px; }
 .day-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .day-day { font-size: 11px; color: var(--text2); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
 .day-type { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; line-height: 1; flex: 1; }
@@ -220,7 +222,7 @@ input[type=number] { -moz-appearance: textfield; }
 .timer-adjust-label { font-size: 12px; color: var(--text2); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
 .quick-done-btn { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
 .quick-done-btn.all-done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-.day-done-btn { margin-left: auto; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.day-done-btn { padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .day-done-btn.done { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
 
@@ -247,7 +249,7 @@ input[type=number] { -moz-appearance: textfield; }
 .btn-warn { background:var(--red);color:#fff;border:none; }
 
 .day-timer { display:flex; align-items:center; gap:8px; margin-left:auto; }
-.day-elapsed { font-family:'DM Mono',monospace; font-size:13px; color:var(--accent); min-width:42px; text-align:right; }
+.day-elapsed { font-family:'DM Mono',monospace; font-size:12px; color:var(--accent); min-width:36px; margin-left:auto; text-align:right; }
 .day-elapsed.inactive { color:var(--text3); }
 .session-btn { padding:4px 10px; border-radius:20px; border:1px solid var(--border2); background:transparent; color:var(--text3); font-family:'DM Mono',monospace; font-size:10px; font-weight:500; cursor:pointer; -webkit-appearance:none; appearance:none; white-space:nowrap; }
 .session-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
@@ -945,19 +947,22 @@ var days = "";
     var dayAllSkipped = day.ex.length > 0 && day.ex.every(function(exName){ var ed = dbGet(db, curWeek, exName, d); return ed && ed.skipped; });
     days += '<div class="day-section">' +
       '<div class="day-header t-' + day.type + '">' +
-        '<div class="day-dot"></div>' +
-        '<div class="day-day">' + day.day.toUpperCase() + '</div>' +
-        '<div class="day-type">' + day.label + '</div>' +
-        '<div class="day-sub">' + day.sub + '</div>' +
+        '<div class="day-header-top">' +
+          '<div class="day-dot"></div>' +
+          '<div class="day-day">' + day.day.toUpperCase() + '</div>' +
+          '<div class="day-type">' + day.label + '</div>' +
+        '</div>' +
+        '<div class="day-header-actions">' +
         '<button class="skip-day-btn' + (dayAllSkipped ? ' skipped' : '') + '"' +
         ' onclick="event.stopPropagation();skipDay(' + d + ')">' +
         (dayAllSkipped ? 'Skipped' : 'Skip day') +
         '</button>' +
-        '<button class="day-done-btn' + (dayAllDone ? " done" : "") + '" onclick="event.stopPropagation();markDayDone(' + d + ')" title="Mark whole day done">' + (dayAllDone ? "Day done" : "Mark done") + '</button>' +
+        '<button class="day-done-btn' + (dayAllDone ? " done" : "") + '" onclick="event.stopPropagation();markDayDone(' + d + ')">' + (dayAllDone ? "Day done" : "Mark done") + '</button>' +
         '<span class="day-elapsed inactive" id="sess-elapsed-' + d + '"></span>' +
         '<button class="session-btn" id="sess-btn-' + d + '"' +
         ' onclick="event.stopPropagation();(loadSession(curWeek,' + d + ')&&loadSession(curWeek,' + d + ').active)?stopSession(' + d + '):startSession(' + d + ')">' +
         'Start</button>' +
+      '</div>' +
       '</div>' +
       '<div class="ex-list">' + rows + '</div></div>';
   }
